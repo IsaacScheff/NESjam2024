@@ -41,6 +41,6 @@ function create() {
     console.log(this.chess.ascii());
 }
 
-
 function update() { 
+    
 }
