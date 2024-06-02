@@ -1,10 +1,12 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './src/game.js',
+    entry: './src/index.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/' // Ensures the correct base path for assets
     },
     module: {
         rules: [
@@ -14,10 +16,20 @@ module.exports = {
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,
-                use: ['file-loader']
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/images/[name][ext]' // Customizes where and how the assets are stored
+                }
             }
         ]
     },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'src/assets', to: 'assets' } // Make sure the path matches where your images are stored
+            ]
+        })
+    ],
     mode: 'development',
     devServer: {
         static: {
