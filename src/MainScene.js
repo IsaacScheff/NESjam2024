@@ -6,19 +6,19 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('b_rook', 'assets/images/BlackRook.png');
-        this.load.image('b_pawn', 'assets/images/BlackPawn.png');
-        this.load.image('b_knight', 'assets/images/BlackKnight.png');
-        this.load.image('b_king', 'assets/images/BlackKing.png');
-        this.load.image('b_queen', 'assets/images/BlackQueen.png');
-        this.load.image('b_bishop', 'assets/images/BlackBishop.png');
+        this.load.image('b_r', 'assets/images/BlackRook.png');
+        this.load.image('b_p', 'assets/images/BlackPawn.png');
+        this.load.image('b_n', 'assets/images/BlackKnight.png');
+        this.load.image('b_k', 'assets/images/BlackKing.png');
+        this.load.image('b_q', 'assets/images/BlackQueen.png');
+        this.load.image('b_b', 'assets/images/BlackBishop.png');
 
-        this.load.image('w_rook', 'assets/images/WhiteRook.png');
-        this.load.image('w_pawn', 'assets/images/WhitePawn.png');
-        this.load.image('w_knight', 'assets/images/WhiteKnight.png');
-        this.load.image('w_king', 'assets/images/WhiteKing.png');
-        this.load.image('w_queen', 'assets/images/WhiteQueen.png');
-        this.load.image('w_bishop', 'assets/images/WhiteBishop.png');
+        this.load.image('w_r', 'assets/images/WhiteRook.png');
+        this.load.image('w_p', 'assets/images/WhitePawn.png');
+        this.load.image('w_n', 'assets/images/WhiteKnight.png');
+        this.load.image('w_k', 'assets/images/WhiteKing.png');
+        this.load.image('w_q', 'assets/images/WhiteQueen.png');
+        this.load.image('w_b', 'assets/images/WhiteBishop.png');
     }
 
     create() {
@@ -37,28 +37,45 @@ export default class MainScene extends Phaser.Scene {
         // Graphics object to draw squares
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
 
-        const squareSize = 24;
-        const offSetX = 32;
-        const offSetY = 24;
+        this.squareSize = 24;
+        this.offSetX = 32;
+        this.offSetY = 24;
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 // Calculate the x and y coordinates for each square
-                let x = col * squareSize + offSetX;
-                let y = row * squareSize + offSetY;
+                let x = col * this.squareSize + this.offSetX;
+                let y = row * this.squareSize + this.offSetY;
 
                 // Alternate colors
                 if ((row + col) % 2 === 0) {
-                    graphics.fillStyle(0xF8F8F8, 1); // Light Squares (off-white)
+                    graphics.fillStyle(0xF8F8F8, 1); //Light Squares (off-white)
                 } else {
                     graphics.fillStyle(0x005800, 1); //Dark Squares (green)
                 }
 
                 // Draw the square
-                graphics.fillRect(x, y, squareSize, squareSize);
+                graphics.fillRect(x, y, this.squareSize, this.squareSize);
             }
         }
-    
+        
+        this.placePieces();
         // Log the current ASCII board (for debugging purposes)
         console.log(this.chess.ascii());
+    }
+   
+    placePieces() {
+        let board = this.chess.board();
+        for (let row = 0; row < board.length; row++) {
+            for (let col = 0; col < board[row].length; col++) {
+                let piece = board[row][col];
+                if (piece) {
+                    let pieceKey = `${piece.color}_${piece.type}`; 
+                    let x = col * this.squareSize + this.offSetX;
+                    let y = row * this.squareSize + this.offSetY;
+
+                    this.add.image(x + this.squareSize / 2, y + this.squareSize / 2, pieceKey);
+                }
+            }
+        }
     }        
 }
