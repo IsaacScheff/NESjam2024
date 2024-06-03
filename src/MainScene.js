@@ -3,6 +3,7 @@ import { Chess } from 'chess.js'
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super("MainScene");
+        this.selectedPiece = null;
     }
 
     preload() {
@@ -29,15 +30,15 @@ export default class MainScene extends Phaser.Scene {
     create() {
         this.chess = new Chess();
 
-        // Make a test move
-        const move = this.chess.move('e4');
+        // // Make a test move
+        // const move = this.chess.move('e4');
     
-        // Check and log the move object
-        if (move) {
-            console.log('Move successful:', move);
-        } else {
-            console.log('Move failed:', move);
-        }
+        // // Check and log the move object
+        // if (move) {
+        //     console.log('Move successful:', move);
+        // } else {
+        //     console.log('Move failed:', move);
+        // }
 
         // Graphics object to draw squares
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
@@ -93,25 +94,34 @@ export default class MainScene extends Phaser.Scene {
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
+        this.input.keyboard.on('keydown-H', this.handleSelection, this);
+
         // Log the current ASCII board (for debugging purposes)
         console.log(this.chess.ascii());
     }
    
     placePieces() {
+        // Clear existing piece sprites
+        if (this.pieceSprites) {
+            this.pieceSprites.forEach(sprite => sprite.destroy());
+        }
+        this.pieceSprites = [];
+    
         let board = this.chess.board();
         for (let row = 0; row < board.length; row++) {
             for (let col = 0; col < board[row].length; col++) {
                 let piece = board[row][col];
                 if (piece) {
-                    let pieceKey = `${piece.color}_${piece.type}`; 
-                    let x = col * this.squareSize + this.offSetX;
-                    let y = row * this.squareSize + this.offSetY;
-
-                    this.add.image(x + this.squareSize / 2, y + this.squareSize / 2, pieceKey);
+                    let pieceKey = `${piece.color}_${piece.type}`;
+                    let x = (col + 0.5) * this.squareSize + this.offSetX;
+                    let y = (row + 0.5) * this.squareSize + this.offSetY;
+                    let sprite = this.add.image(x, y, pieceKey);
+                    this.pieceSprites.push(sprite);  // Store reference to the sprite
                 }
             }
         }
-    }  
+    }
+     
     
     update() {
         if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keyA)) {
@@ -135,6 +145,39 @@ export default class MainScene extends Phaser.Scene {
 
         this.cursorSprite.x = (this.cursorCol + 0.5) * this.squareSize + this.offSetX;
         this.cursorSprite.y = (this.cursorRow + 0.5) * this.squareSize + this.offSetY;
+    }
+
+    handleSelection() {
+        const piece = this.getPieceAt(this.cursorCol, this.cursorRow);
+        if (this.selectedPiece) {
+            // Try to move the selected piece to the new position
+            const move = this.chess.move({
+                from: this.squareToCoords(this.selectedPiece),
+                to: this.squareToCoords({col: this.cursorCol, row: this.cursorRow}),
+                promotion: 'q'  // Always promote to a queen for now
+            });
+    
+            if (move) {
+                console.log('Move successful:', move);
+                this.placePieces();  // Re-render the board with new positions
+                this.selectedPiece = null;  // Deselect piece after move
+            } else {
+                console.log('Move failed');
+                // Optionally deselect or reselect
+            }
+        } else if (piece && piece.color === 'w') {
+            // Select the piece if it is white
+            this.selectedPiece = { col: this.cursorCol, row: this.cursorRow };
+            console.log('Piece selected:', piece);
+        }
+    }
+    
+    getPieceAt(col, row) {
+        return this.chess.get(this.squareToCoords({ col, row }));
+    }
+    
+    squareToCoords({col, row}) {
+        return String.fromCharCode(97 + col) + (8 - row);
     }
     
 }
