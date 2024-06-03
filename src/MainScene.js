@@ -19,10 +19,27 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('w_k', 'assets/images/WhiteKing.png');
         this.load.image('w_q', 'assets/images/WhiteQueen.png');
         this.load.image('w_b', 'assets/images/WhiteBishop.png');
+
+        this.load.image('cursorBase', 'assets/images/CursorBase.png');
+        this.load.image('cursorOuter', 'assets/images/CursorOuter.png');
+        this.load.image('cursorMiddle', 'assets/images/CursorMiddle.png');
+        this.load.image('cursorInner', 'assets/images/CursorInner.png');
     }
 
     create() {
         this.chess = new Chess();
+
+        this.anims.create({
+            key: 'cursorAnimation',
+            frames: [
+                { key: 'cursorBase' },
+                { key: 'cursorOuter' },
+                { key: 'cursorMiddle' },
+                { key: 'cursorInner' }
+            ],
+            frameRate: 3,  
+            repeat: -1  // loops permanantly 
+        });
     
         // Make a test move
         const move = this.chess.move('e4');
@@ -59,6 +76,10 @@ export default class MainScene extends Phaser.Scene {
         }
         
         this.placePieces();
+
+        const cursor = this.add.sprite(4.5 * this.squareSize + this.offSetX, 4.5 * this.squareSize + this.offSetY, 'cursorBase');
+        cursor.play('cursorAnimation');
+
         // Log the current ASCII board (for debugging purposes)
         console.log(this.chess.ascii());
     }
