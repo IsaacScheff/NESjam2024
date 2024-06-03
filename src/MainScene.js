@@ -1,9 +1,11 @@
 import { Chess } from 'chess.js' 
+import { makeRandomMove } from './ai/randomMoveAI.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super("MainScene");
         this.selectedPiece = null;
+        this.playerTurn = true;
     }
 
     preload() {
@@ -160,6 +162,7 @@ export default class MainScene extends Phaser.Scene {
                 if (move) {
                     console.log('Move successful:', move);
                     this.placePieces();  // Update the board visuals
+                    this.endTurn();
                 } else {
                     console.log('Invalid move attempted');
                     // Play error sound here
@@ -187,5 +190,34 @@ export default class MainScene extends Phaser.Scene {
     squareToCoords({col, row}) {
         return String.fromCharCode(97 + col) + (8 - row);
     }
+
+    endTurn() {
+        if (this.playerTurn) {
+            //hide/destroy cursor
+            this.playerTurn = false;  
+            this.opponentTurn(); 
+        } else {
+            //remake cursor
+            this.playerTurn = true; 
+        }
+    }
+
+    opponentTurn() {
+        if (!this.playerTurn) {
+            // Delay the AI move by 1500 milliseconds (1.5 seconds)
+            this.time.delayedCall(1500, () => {
+                const move = makeRandomMove(this.chess);
+                if (move) {
+                    console.log('AI moved:', move);
+                    this.placePieces();  
+                } else {
+                    console.log('AI has no moves available');
+                    // Handle game over or checkmate
+                }
+                this.endTurn(); 
+            }, [], this);
+        }
+    }
+    
     
 }
