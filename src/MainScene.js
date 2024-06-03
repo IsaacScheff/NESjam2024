@@ -29,18 +29,6 @@ export default class MainScene extends Phaser.Scene {
     create() {
         this.chess = new Chess();
 
-        this.anims.create({
-            key: 'cursorAnimation',
-            frames: [
-                { key: 'cursorBase' },
-                { key: 'cursorOuter' },
-                { key: 'cursorMiddle' },
-                { key: 'cursorInner' }
-            ],
-            frameRate: 3,  
-            repeat: -1  // loops permanantly 
-        });
-    
         // Make a test move
         const move = this.chess.move('e4');
     
@@ -77,8 +65,33 @@ export default class MainScene extends Phaser.Scene {
         
         this.placePieces();
 
-        const cursor = this.add.sprite(4.5 * this.squareSize + this.offSetX, 4.5 * this.squareSize + this.offSetY, 'cursorBase');
+        this.anims.create({
+            key: 'cursorAnimation',
+            frames: [
+                { key: 'cursorBase' },
+                { key: 'cursorOuter' },
+                { key: 'cursorMiddle' },
+                { key: 'cursorInner' }
+            ],
+            frameRate: 3,  
+            repeat: -1  // loops permanantly 
+        });
+        this.cursorCol = 4; // cursor initialised on e2
+        this.cursorRow = 6; 
+        const cursor = this.add.sprite(
+            (this.cursorCol + 0.5)* this.squareSize + this.offSetX, 
+            (this.cursorRow + 0.5)* this.squareSize + this.offSetY, 
+            'cursorBase'
+        );
+    
         cursor.play('cursorAnimation');
+        this.cursorSprite = cursor;
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);  
+        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         // Log the current ASCII board (for debugging purposes)
         console.log(this.chess.ascii());
@@ -98,5 +111,30 @@ export default class MainScene extends Phaser.Scene {
                 }
             }
         }
-    }        
+    }  
+    
+    update() {
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keyA)) {
+            this.moveCursor(-1, 0);
+        } else if (Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.keyD)) {
+            this.moveCursor(1, 0);
+        } else if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keyW)) {
+            this.moveCursor(0, -1);
+        } else if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keyS)) {
+            this.moveCursor(0, 1);
+        }
+    }
+    
+    moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
+        // Temporarily calculate new positions
+        let newCol = this.cursorCol + dx;
+        let newRow = this.cursorRow + dy;
+    
+        this.cursorCol = Phaser.Math.Clamp(newCol, 0, 7);
+        this.cursorRow = Phaser.Math.Clamp(newRow, 0, 7);
+
+        this.cursorSprite.x = (this.cursorCol + 0.5) * this.squareSize + this.offSetX;
+        this.cursorSprite.y = (this.cursorRow + 0.5) * this.squareSize + this.offSetY;
+    }
+    
 }
