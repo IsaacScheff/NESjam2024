@@ -150,27 +150,35 @@ export default class MainScene extends Phaser.Scene {
     handleSelection() {
         const piece = this.getPieceAt(this.cursorCol, this.cursorRow);
         if (this.selectedPiece) {
-            // Try to move the selected piece to the new position
-            const move = this.chess.move({
-                from: this.squareToCoords(this.selectedPiece),
-                to: this.squareToCoords({col: this.cursorCol, row: this.cursorRow}),
-                promotion: 'q'  // Always promote to a queen for now
-            });
+            try {
+                const move = this.chess.move({
+                    from: this.squareToCoords(this.selectedPiece),
+                    to: this.squareToCoords({col: this.cursorCol, row: this.cursorRow}),
+                    promotion: 'q'  // Defaults to promotion to queen; TODO: add promotion choice
+                });
     
-            if (move) {
-                console.log('Move successful:', move);
-                this.placePieces();  // Re-render the board with new positions
-                this.selectedPiece = null;  // Deselect piece after move
-            } else {
-                console.log('Move failed');
-                // Optionally deselect or reselect
+                if (move) {
+                    console.log('Move successful:', move);
+                    this.placePieces();  // Update the board visuals
+                } else {
+                    console.log('Invalid move attempted');
+                    // Play error sound here
+                    // this.sound.play('errorSound');
+                }
+            } catch (error) {
+                console.log('Error during move:', error.message);
+                // Play error sound here
+                // this.sound.play('errorSound');
             }
+    
+            // Deselect piece regardless of move success or failure
+            this.selectedPiece = null;
         } else if (piece && piece.color === 'w') {
-            // Select the piece if it is white
+            // Select the piece if it is a white piece
             this.selectedPiece = { col: this.cursorCol, row: this.cursorRow };
             console.log('Piece selected:', piece);
         }
-    }
+    }    
     
     getPieceAt(col, row) {
         return this.chess.get(this.squareToCoords({ col, row }));
