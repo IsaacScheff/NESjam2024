@@ -242,9 +242,12 @@ export default class MainScene extends Phaser.Scene {
         this.chess.undo();
         var currentFEN = this.chess.fen();
         var newBoardState = this.removePieceFromFEN(currentFEN, lastMove);
-        var newFEN = this.updateFenFromBoardArray(newBoardState, this.chess.fen());
+        var newFEN = this.toggleTurn(this.updateFenFromBoardArray(newBoardState, this.chess.fen()));
         this.chess.load(newFEN);
         this.placePieces();
+        if(!this.playerTurn){
+            this.opponentTurn();
+        }
     }
 
     removePieceFromFEN(fen, lastMove) {
@@ -321,5 +324,12 @@ export default class MainScene extends Phaser.Scene {
         boardArray[x][y] = '1';  // Set to '1' or your designated empty square marker
         return boardArray;
     }
+
+    toggleTurn(fen) {
+        const parts = fen.split(' ');
+        parts[1] = parts[1] === 'w' ? 'b' : 'w'; // Toggle between 'w' (white) and 'b' (black)
+        return parts.join(' ');
+    }
+    
       
 }
