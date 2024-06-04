@@ -87,10 +87,7 @@ export default class MainScene extends Phaser.Scene {
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-        this.input.keyboard.on('keydown-H', this.handleSelection, this);
-
-        // Log the current ASCII board (for debugging purposes)
-        console.log(this.chess.ascii());
+        this.input.keyboard.on('keydown-J', this.handleSelection, this);
     }
    
     placePieces() {
@@ -151,7 +148,6 @@ export default class MainScene extends Phaser.Scene {
                 });
         
                 if (move) {
-                    console.log('Move successful:', move);
                     this.placePieces();  // Update the board visuals
     
                     // Check if the move is a capture
@@ -174,7 +170,6 @@ export default class MainScene extends Phaser.Scene {
         } else if (piece && piece.color === 'w') {
             // Select the piece if it is a white piece
             this.selectedPiece = { col: this.cursorCol, row: this.cursorRow };
-            console.log('Piece selected:', piece);
         }
     }      
     
@@ -202,7 +197,6 @@ export default class MainScene extends Phaser.Scene {
             this.time.delayedCall(1500, () => {
                 const move = makeRandomMove(this.chess); 
                 if (move) {
-                    console.log('AI moved:', move);
                     this.placePieces();
                     // Check if the AI's move was a capture
                     if (move.flags.includes('c')) {
@@ -220,7 +214,6 @@ export default class MainScene extends Phaser.Scene {
 
     handleCapture() {
         this.playerTurn = !this.playerTurn; //as we're not calling endTurn if we enter fight must switch here
-        console.log("Capture detected, transitioning to FightScene");
         this.scene.switch('FightScene');
     }
 
@@ -233,10 +226,100 @@ export default class MainScene extends Phaser.Scene {
     }
 
     checkTurn() {
-        console.log("turn check happened");
-        console.log(this.playerTurn);
-        if (!this.playerTurn) {
+        const winner = this.game.registry.get('fightWinner');
+        console.log("Winner from fight: ", winner);
+        if (winner) {
+            this.handleDefenderWin(winner);
+        } else if (!this.playerTurn) {
             this.opponentTurn();  // If it's the AI's turn, continue with opponent's move
         }
     }
+
+    handleDefenderWin() {
+        this.game.registry.set('fightWinner', null);
+        const lastMove = this.chess.history({ verbose: true }).pop();
+        console.log(lastMove);
+        this.chess.undo();
+        var currentFEN = this.chess.fen();
+        var newBoardState = this.removePieceFromFEN(currentFEN, lastMove);
+        var newFEN = this.updateFenFromBoardArray(newBoardState, this.chess.fen());
+        this.chess.load(newFEN);
+        this.placePieces();
+    }
+
+    removePieceFromFEN(fen, lastMove) {
+        var boardArray = this.fenTo2DArray(fen);
+        var fromX = 8 - parseInt(lastMove.from[1]); 
+        var fromY = lastMove.from.charCodeAt(0) - 'a'.charCodeAt(0); 
+        var updatedBoard = this.removePiece(boardArray, fromX, fromY); 
+        return updatedBoard;
+    }
+
+    extractBoard(fen) {
+        return fen.split(' ')[0];  // Extracts only the board part of the FEN string
+    }
+
+    fenTo2DArray(fen) {
+        const board = this.extractBoard(fen);
+        const ranks = board.split('/');
+        const boardArray = [];
+    
+        for (let rank of ranks) {
+            const row = [];
+            for (let char of rank) {
+                if (isNaN(char)) {
+                    // If it's not a number, it's a piece
+                    row.push(char);
+                } else {
+                    // If it's a number, it represents that many empty squares
+                    const empty = parseInt(char, 10);
+                    for (let i = 0; i < empty; i++) {
+                        row.push('1');  // Use '1' or another character to represent empty squares
+                    }
+                }
+            }
+            boardArray.push(row);
+        }
+        return boardArray;
+    }
+
+    arrayToFen(boardArray) {
+        let fenRows = [];
+        for (let row of boardArray) {
+            let currentRow = '';
+            let emptyCount = 0;
+    
+            for (let square of row) {
+                if (square === '1') {  // Assuming '1' is used for empty squares
+                    emptyCount++;
+                } else {
+                    if (emptyCount > 0) {
+                        currentRow += emptyCount.toString();
+                        emptyCount = 0;
+                    }
+                    currentRow += square;
+                }
+            }
+            if (emptyCount > 0) {  // Append any remaining empty squares at the end of the row
+                currentRow += emptyCount;
+            }
+            fenRows.push(currentRow);
+        }
+        return fenRows.join('/');
+    }
+
+    updateFenFromBoardArray(boardArray, currentFen) {
+        console.log(currentFen);
+        const parts = currentFen.split(' ');
+        const boardPart = this.arrayToFen(boardArray);  // Convert array back to FEN board part
+        parts[0] = boardPart;  // Replace the board part of the existing FEN
+        return parts.join(' ');
+    }
+    
+    removePiece(boardArray, x, y) {
+        // x is the row index, y is the column index
+        boardArray[x][y] = '1';  // Set to '1' or your designated empty square marker
+        return boardArray;
+    }
+      
 }
