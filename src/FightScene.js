@@ -11,6 +11,7 @@ export default class FightScene extends Phaser.Scene {
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.enterKey.on('down', () => {
             console.log("Returning to chess game");
+            this.game.registry.set('fightWinner', 'attacker');
             this.scene.switch('MainScene');  
         });
 
@@ -20,9 +21,5 @@ export default class FightScene extends Phaser.Scene {
             this.game.registry.set('fightWinner', 'defender');
             this.scene.switch('MainScene');
         });
-        // this.defenderWinKey.on('down', () => {
-        //     console.log("Returning to chess game, defender win");
-        //     this.scene.switch('MainScene', { fightWinner: 'defender' });;  
-        // });
     }
 }

@@ -214,7 +214,6 @@ export default class MainScene extends Phaser.Scene {
 
     handleCapture() {
         const lastMove = this.chess.history({ verbose: true }).pop(); 
-        console.log(lastMove);
         if (lastMove && lastMove.piece === 'k') {
             // If the piece is a King, handle the capture automatically
             console.log('King captures automatically.');
@@ -236,7 +235,7 @@ export default class MainScene extends Phaser.Scene {
     checkTurn() {
         const winner = this.game.registry.get('fightWinner');
         console.log("Winner from fight: ", winner);
-        if (winner) {
+        if (winner === 'defender') {
             this.handleDefenderWin(winner);
         } else if (!this.playerTurn) {
             this.opponentTurn();  // If it's the AI's turn, continue with opponent's move
@@ -247,14 +246,33 @@ export default class MainScene extends Phaser.Scene {
         this.game.registry.set('fightWinner', null);
         const lastMove = this.chess.history({ verbose: true }).pop();
         console.log(lastMove);
+    
         this.chess.undo();
         var currentFEN = this.chess.fen();
         var newBoardState = this.removePieceFromFEN(currentFEN, lastMove);
-        var newFEN = this.toggleTurn(this.updateFenFromBoardArray(newBoardState, this.chess.fen()));
-        this.chess.load(newFEN);
-        this.placePieces();
-        if(!this.playerTurn){
-            this.opponentTurn();
+        var newFEN = this.updateFenFromBoardArray(newBoardState, this.chess.fen());
+    
+        try {
+            this.chess.load(newFEN);
+            if (this.chess.inCheck()) {
+                console.log("King is in check, player must move again.");
+                this.playerTurn = !this.playerTurn;
+                if(!this.playerTurn){
+                    this.opponentTurn();
+                    this.placePieces();
+                    return;
+                }
+            } else {
+                newFEN = this.toggleTurn(newFEN);
+                this.chess.load(newFEN);
+            }
+            this.placePieces(); 
+            if (!this.playerTurn) {
+                this.opponentTurn();
+            }
+        } catch (error) {
+            console.log("Failed to load FEN: ", error);
+            // Handle the error, possibly by resetting to a safe state or notifying the player
         }
     }
 
