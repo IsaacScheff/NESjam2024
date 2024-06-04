@@ -31,16 +31,7 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.chess = new Chess();
-
-        // // Make a test move
-        // const move = this.chess.move('e4');
-    
-        // // Check and log the move object
-        // if (move) {
-        //     console.log('Move successful:', move);
-        // } else {
-        //     console.log('Move failed:', move);
-        // }
+        this.events.on('wake', this.checkTurn, this);
 
         // Graphics object to draw squares
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
@@ -66,7 +57,7 @@ export default class MainScene extends Phaser.Scene {
             }
         }
         
-        this.placePieces();
+        this.initGameState();
 
         this.anims.create({
             key: 'cursorAnimation',
@@ -158,20 +149,24 @@ export default class MainScene extends Phaser.Scene {
                     to: this.squareToCoords({col: this.cursorCol, row: this.cursorRow}),
                     promotion: 'q'  // Defaults to promotion to queen; TODO: add promotion choice
                 });
-    
+        
                 if (move) {
                     console.log('Move successful:', move);
                     this.placePieces();  // Update the board visuals
-                    this.endTurn();
+    
+                    // Check if the move is a capture
+                    if (move.flags.includes('c')) {
+                        this.handleCapture();
+                    } else {
+                        this.endTurn();
+                    }
                 } else {
                     console.log('Invalid move attempted');
-                    // Play error sound here
-                    // this.sound.play('errorSound');
+                    // Optionally play error sound
                 }
             } catch (error) {
                 console.log('Error during move:', error.message);
-                // Play error sound here
-                // this.sound.play('errorSound');
+                // Optionally play error sound
             }
     
             // Deselect piece regardless of move success or failure
@@ -181,7 +176,7 @@ export default class MainScene extends Phaser.Scene {
             this.selectedPiece = { col: this.cursorCol, row: this.cursorRow };
             console.log('Piece selected:', piece);
         }
-    }    
+    }      
     
     getPieceAt(col, row) {
         return this.chess.get(this.squareToCoords({ col, row }));
@@ -218,6 +213,26 @@ export default class MainScene extends Phaser.Scene {
             }, [], this);
         }
     }
+
+    handleCapture() {
+        this.playerTurn = !this.playerTurn; //as we're not calling endTurn if we enter fight must switch here
+        console.log("Capture detected, transitioning to FightScene");
+        this.scene.switch('FightScene');
+    }
+
+    initGameState() {
+        this.placePieces();
     
-    
+        if (!this.playerTurn) {
+            this.opponentTurn();  
+        }
+    }
+
+    checkTurn() {
+        console.log("turn check happened");
+        console.log(this.playerTurn);
+        if (!this.playerTurn) {
+            this.opponentTurn();  // If it's the AI's turn, continue with opponent's move
+        }
+    }
 }
