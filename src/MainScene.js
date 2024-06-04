@@ -213,8 +213,16 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleCapture() {
-        this.playerTurn = !this.playerTurn; //as we're not calling endTurn if we enter fight must switch here
-        this.scene.switch('FightScene');
+        const lastMove = this.chess.history({ verbose: true }).pop(); 
+        console.log(lastMove);
+        if (lastMove && lastMove.piece === 'k') {
+            // If the piece is a King, handle the capture automatically
+            console.log('King captures automatically.');
+            this.endTurn();  // Continue to the next turn without entering the fight scene
+        } else {
+            this.playerTurn = !this.playerTurn; // Toggle player turn as we are not calling endTurn if we enter the fight scene
+            this.scene.switch('FightScene');
+        }
     }
 
     initGameState() {
