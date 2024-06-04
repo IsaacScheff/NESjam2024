@@ -199,17 +199,21 @@ export default class MainScene extends Phaser.Scene {
 
     opponentTurn() {
         if (!this.playerTurn) {
-            // Delay the AI move by 1500 milliseconds (1.5 seconds)
             this.time.delayedCall(1500, () => {
-                const move = makeRandomMove(this.chess);
+                const move = makeRandomMove(this.chess); 
                 if (move) {
                     console.log('AI moved:', move);
-                    this.placePieces();  
+                    this.placePieces();
+                    // Check if the AI's move was a capture
+                    if (move.flags.includes('c')) {
+                        this.handleCapture();  
+                    } else {
+                        this.endTurn();
+                    }
                 } else {
                     console.log('AI has no moves available');
                     // Handle game over or checkmate
                 }
-                this.endTurn(); 
             }, [], this);
         }
     }
