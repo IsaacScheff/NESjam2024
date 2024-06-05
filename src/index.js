@@ -11,12 +11,14 @@ const config = {
     parent: 'game-container',
     physics: {
         default: 'arcade',
-        matter: {
-            gravity: { y: 0 },
-            debug: false 
+        arcade: {
+            gravity: { y: 300 },
+            //debug: false 
+            debug: true
         }
     },
     scene: [MainScene, FightScene]
+    //scene: [FightScene]
 };
 
 new Phaser.Game(config);
