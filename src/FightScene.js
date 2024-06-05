@@ -30,9 +30,33 @@ export default class FightScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(100, 100, 'w_p');
         this.player.setCollideWorldBounds(true);
 
-        // Enable collision between the player and the tiles
+        this.arrowKeys = this.input.keyboard.createCursorKeys();
+        this.keys = {
+            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            jump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J)
+        };
+        
         this.physics.add.collider(this.player, this.tiles);
     }
+
+    update() {
+        this.player.setVelocityX(0);
+    
+        if (this.arrowKeys.left.isDown || this.keys.left.isDown) {
+            this.player.setVelocityX(-130);
+        } else if (this.arrowKeys.right.isDown || this.keys.right.isDown) {
+            this.player.setVelocityX(130);
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.keys.jump) && this.player.body.touching.down) {
+            this.player.setVelocityY(-160); 
+        }
+    
+    }
+    
 
     createTiles() {
         const tiles = this.physics.add.staticGroup();
