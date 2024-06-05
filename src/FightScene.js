@@ -1,11 +1,14 @@
-// FightScene.js
 export default class FightScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FightScene' });
     }
 
+    preload() {
+        this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+    }
+
     create() {
-        console.log("Entered FightScene");
+        this.add.bitmapText(100, 100, 'pixelFont', 'FIGHT SCENE', 8);
 
         // Handle the Enter key to switch back to the chess game
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
