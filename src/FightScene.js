@@ -22,6 +22,9 @@ export default class FightScene extends Phaser.Scene {
     }
 
     create(data) {
+        this.setupGamepad();
+        this.gamepadButtons = {};
+        
         this.cameras.main.setBackgroundColor('#F87858');
         this.attacker = this.game.registry.get('attacker');
 
@@ -107,28 +110,34 @@ export default class FightScene extends Phaser.Scene {
         this.player.setVelocityX(0);
 
         if (this.arrowKeys.left.isDown || this.keys.left.isDown) {
-            this.player.setVelocityX(-130);
-            this.player.flipX = true; 
-            this.playerSword.flipX = true;
-            this.updateSwordPosition();
+            this.moveLeft();
         } else if (this.arrowKeys.right.isDown || this.keys.right.isDown) {
-            this.player.setVelocityX(130);
-            this.player.flipX = false; 
-            this.playerSword.flipX = false;
-            this.updateSwordPosition();
+            this.moveRight();
         }
 
         if (Phaser.Input.Keyboard.JustDown(this.keys.jump) && this.player.body.touching.down) {
-            this.player.setVelocityY(-160); // Adjust jump strength as needed
+            this.jump();
         }
 
-        const currentTime = this.time.now;
-        if (Phaser.Input.Keyboard.JustDown(this.keys.swing) && currentTime > this.lastAttackTime + this.attackCooldown) {
-            this.playerSword.body.enable = true; // Enable physics body
-            this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
-                this.playerSword.body.enable = false; // Disable physics body after animation
-            });
-            this.lastAttackTime = currentTime; // Update last swing time
+        //const currentTime = this.time.now;
+        if (Phaser.Input.Keyboard.JustDown(this.keys.swing)) {
+            this.attack();
+            // && currentTime > this.lastAttackTime + this.attackCooldown) {
+            // this.playerSword.body.enable = true; // Enable physics body
+            // this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
+            //     this.playerSword.body.enable = false; // Disable physics body after animation
+            // });
+            // this.lastAttackTime = currentTime; // Update last swing time
+        }
+
+        if (this.gamepad) {
+            this.handleGamepadInput(14, 'left');
+            this.handleGamepadInput(15, 'right');
+            this.handleGamepadInput(12, 'up');
+            this.handleGamepadInput(13, 'down');
+
+            this.handleGamepadInput(1, 'A');
+            this.handleGamepadInput(0, 'B');
         }
 
         this.updateSwordPosition();
@@ -147,6 +156,31 @@ export default class FightScene extends Phaser.Scene {
             jump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J),
             swing: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
         };
+    }
+
+    handleGamepadInput(buttonIndex, action) {
+        const isDown = this.gamepad.buttons[buttonIndex].pressed;
+        if (isDown) {
+            switch (action) {
+                case 'left':
+                    this.moveLeft();
+                    break;
+                case 'right':
+                    this.moveRight();
+                    break;
+                case 'up':
+                    //nothing for now
+                    break;
+                case 'down':
+                    //nothing for now
+                    break;
+                case 'A':
+                    this.jump();
+                    break;
+                case 'B':
+                    this.attack();
+            }
+        }
     }
 
     createTiles() {
@@ -176,13 +210,37 @@ export default class FightScene extends Phaser.Scene {
         this.playerSword.y = this.player.y - 4;
     }
 
-    makeEnemyRed(opponent) {
-        opponent.setTint(0xff0000); // Set to red
-        this.time.delayedCall(200, () => {
-            opponent.clearTint(); // Remove tint after 200ms
-        });
+    moveLeft() {
+        this.player.setVelocityX(-130);
+        this.player.flipX = true;
+        this.playerSword.flipX = true;
+        this.updateSwordPosition();
     }
 
+    moveRight() {
+        this.player.setVelocityX(130);
+        this.player.flipX = false; 
+        this.playerSword.flipX = false;
+        this.updateSwordPosition();
+    }
+
+    jump() {
+        if (this.player.body.touching.down) {
+            this.player.setVelocityY(-160);
+        }
+    }
+
+    attack() {
+        const currentTime = this.time.now;
+        if (currentTime > this.lastAttackTime + this.attackCooldown) {
+            this.playerSword.body.enable = true;
+            this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
+                this.playerSword.body.enable = false;
+            });
+            this.lastAttackTime = currentTime;
+        }
+    }
+    
     damagePlayer() {
         if (this.playerHealth > 0 && !this.playerInvulnerable) {
             this.playerHealth--;
@@ -232,6 +290,30 @@ export default class FightScene extends Phaser.Scene {
             onComplete: () => {
                 sprite.alpha = 1; // Reset the alpha to 1 after blinking
                 callback();
+            }
+        });
+    }
+
+    setupGamepad() {
+        // Check if any gamepad is already connected
+        if (this.input.gamepad.total > 0) {
+            this.gamepad = this.input.gamepad.pad1;
+            console.log('Gamepad connected!');
+        } else {
+            console.log('No gamepad connected at start.');
+        }
+    
+        // Listen for gamepad connection
+        this.input.gamepad.once('connected', (pad) => {
+            this.gamepad = pad;
+            console.log('Gamepad connected during scene!');
+        });
+    
+        // Optional: Listen for gamepad disconnection
+        this.input.gamepad.once('disconnected', (pad) => {
+            if (this.gamepad === pad) {
+                this.gamepad = null;
+                console.log('Gamepad disconnected!');
             }
         });
     }

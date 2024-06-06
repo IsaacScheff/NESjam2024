@@ -30,6 +30,9 @@ export default class ChessScene extends Phaser.Scene {
     }
 
     create() {
+        this.setupGamepad();
+        this.gamepadButtons = {};
+
         this.chess = new Chess();
         this.events.on('wake', this.checkTurn, this);
 
@@ -88,6 +91,7 @@ export default class ChessScene extends Phaser.Scene {
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         this.input.keyboard.on('keydown-J', this.handleSelection, this);
+
     }
    
     placePieces() {
@@ -123,6 +127,15 @@ export default class ChessScene extends Phaser.Scene {
         } else if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keyS)) {
             this.moveCursor(0, 1);
         }
+
+        if (this.gamepad) {
+            this.handleGamepadInput(14, 'left');
+            this.handleGamepadInput(15, 'right');
+            this.handleGamepadInput(12, 'up');
+            this.handleGamepadInput(13, 'down');
+
+            this.handleGamepadInput(1, 'A');
+        }
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -135,6 +148,33 @@ export default class ChessScene extends Phaser.Scene {
 
         this.cursorSprite.x = (this.cursorCol + 0.5) * this.squareSize + this.offSetX;
         this.cursorSprite.y = (this.cursorRow + 0.5) * this.squareSize + this.offSetY;
+    }
+
+    handleGamepadInput(buttonIndex, action) {
+        const isDown = this.gamepad.buttons[buttonIndex].pressed;
+        const wasDown = this.gamepadButtons[buttonIndex];
+    
+        if (isDown && !wasDown) {
+            switch (action) {
+                case 'left':
+                    this.moveCursor(-1, 0);
+                    break;
+                case 'right':
+                    this.moveCursor(1, 0);
+                    break;
+                case 'up':
+                    this.moveCursor(0, -1);
+                    break;
+                case 'down':
+                    this.moveCursor(0, 1);
+                    break;
+                case 'A':
+                    this.handleSelection();
+            }
+        }
+    
+        // Update the stored state for the next frame
+        this.gamepadButtons[buttonIndex] = isDown;
     }
 
     handleSelection() {
@@ -357,6 +397,29 @@ export default class ChessScene extends Phaser.Scene {
         parts[1] = parts[1] === 'w' ? 'b' : 'w'; // Toggle between 'w' (white) and 'b' (black)
         return parts.join(' ');
     }
+
+    setupGamepad() {
+        // Check if any gamepad is already connected
+        if (this.input.gamepad.total > 0) {
+            this.gamepad = this.input.gamepad.pad1;
+            console.log('Gamepad connected!');
+        } else {
+            console.log('No gamepad connected at start.');
+        }
     
+        // Listen for gamepad connection
+        this.input.gamepad.once('connected', (pad) => {
+            this.gamepad = pad;
+            console.log('Gamepad connected during scene!');
+        });
+    
+        // Optional: Listen for gamepad disconnection
+        this.input.gamepad.once('disconnected', (pad) => {
+            if (this.gamepad === pad) {
+                this.gamepad = null;
+                console.log('Gamepad disconnected!');
+            }
+        });
+    }
       
 }

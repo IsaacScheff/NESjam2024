@@ -18,6 +18,9 @@ const config = {
             //debug: true
         }
     },
+    input: {
+        gamepad: true
+    },
     scene: [ChessScene, FightScene, TransitionScene]
     //scene: [FightScene]
 };
