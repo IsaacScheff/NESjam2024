@@ -4,6 +4,7 @@ export default class FightScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FightScene' });
 
+
         this.lastAttackTime = 0;  // Timestamp of the last swing
         this.attackCooldown = 1000; // Cooldown time in milliseconds (1 second)
     }
@@ -17,9 +18,37 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
+
+        this.load.image('heart', 'assets/images/Heart.png');
     }
 
     create() {
+        this.cameras.main.setBackgroundColor('#F87858');
+
+        this.playerHealth = 3;
+        this.opponentHealth = 3;
+        this.playerInvulnerable = false;
+        this.opponentInvulnerable = false;
+
+        this.playerHearts = this.add.group({
+            key: 'heart',
+            repeat: this.playerHealth - 1,
+            setXY: {
+                x: 10,
+                y: 10,
+                stepX: 16
+            }
+        });
+        this.opponentHearts = this.add.group({
+            key: 'heart',
+            repeat: this.opponentHealth - 1,
+            setXY: {
+                x: 10,
+                y: 30,
+                stepX: 16
+            }
+        });
+
         this.tiles = this.createTiles();
         this.player = this.physics.add.sprite(100, 100, 'w_p');
         this.player.setCollideWorldBounds(true);
@@ -58,13 +87,14 @@ export default class FightScene extends Phaser.Scene {
 
         this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
             if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
-                this.makeEnemyRed(opponent); //this.damageEnemy(opponent);
+                //this.makeEnemyRed(opponent); //this.damageEnemy(opponent);
+                this.damageOpponent();
                 opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
             }
         });
 
         this.physics.add.collider(this.player, this.opponentAI.sprite, (player, opponent) => {
-            // Handle damage to player or bounce off logic
+            this.damagePlayer();
         });
 
         // Set up controls
@@ -148,6 +178,59 @@ export default class FightScene extends Phaser.Scene {
         opponent.setTint(0xff0000); // Set to red
         this.time.delayedCall(200, () => {
             opponent.clearTint(); // Remove tint after 200ms
+        });
+    }
+
+    damagePlayer() {
+        if (this.playerHealth > 0 && !this.playerInvulnerable) {
+            this.playerHealth--;
+            this.playerInvulnerable = true;
+            this.blink(this.player, () => { this.playerInvulnerable = false; });
+    
+            let heart = this.playerHearts.getChildren()[this.playerHealth];
+            if (heart) {
+                heart.setVisible(false);
+            }
+    
+            if (this.playerHealth === 0) {
+                // Player dies, opponent wins
+                //this.game.registry.set('fightWinner', 'defender');
+                //this.scene.switch('MainScene');
+            }
+        }
+    }
+
+    damageOpponent() {
+        if (this.opponentHealth > 0 && !this.opponentInvulnerable) {
+            this.opponentHealth--;
+            this.opponentInvulnerable = true;
+            this.blink(this.opponentAI.sprite, () => { this.opponentInvulnerable = false; });
+    
+            let heart = this.opponentHearts.getChildren()[this.opponentHealth];
+            if (heart) {
+                heart.setVisible(false);
+            }
+    
+            if (this.opponentHealth === 0) {
+                // Opponent dies, player wins
+                //this.game.registry.set('fightWinner', 'attacker');
+                //this.scene.switch('MainScene');
+            }
+        }
+    }
+
+    blink(sprite, callback) {
+        const blinkTween = this.tweens.add({
+            targets: sprite,
+            alpha: 0.0,
+            ease: 'Cubic.easeInOut',
+            duration: 100,
+            yoyo: true,
+            repeat: 5,
+            onComplete: () => {
+                sprite.alpha = 1; // Reset the alpha to 1 after blinking
+                callback();
+            }
         });
     }
 }
