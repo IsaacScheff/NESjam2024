@@ -49,7 +49,7 @@ export default class MainScene extends Phaser.Scene {
                 if ((row + col) % 2 === 0) {
                     graphics.fillStyle(0xFCE0A8, 1); //Light Squares (tan off-white)
                 } else {
-                    graphics.fillStyle(0x005800, 1); //Dark Squares (green)
+                    graphics.fillStyle(0x005800, 1); //Dark Squares (dark blue)
                 }
 
                 // Draw the square

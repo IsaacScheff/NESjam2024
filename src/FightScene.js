@@ -56,6 +56,17 @@ export default class FightScene extends Phaser.Scene {
 
         this.physics.add.collider(this.player, this.tiles);
 
+        this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
+            if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
+                this.makeEnemyRed(opponent); //this.damageEnemy(opponent);
+                opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
+            }
+        });
+
+        this.physics.add.collider(this.player, this.opponentAI.sprite, (player, opponent) => {
+            // Handle damage to player or bounce off logic
+        });
+
         // Set up controls
         this.setupControls();
     }
@@ -81,7 +92,10 @@ export default class FightScene extends Phaser.Scene {
 
         const currentTime = this.time.now;
         if (Phaser.Input.Keyboard.JustDown(this.keys.swing) && currentTime > this.lastAttackTime + this.attackCooldown) {
-            this.playerSword.play('playerSwordSwing');
+            this.playerSword.body.enable = true; // Enable physics body
+            this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
+                this.playerSword.body.enable = false; // Disable physics body after animation
+            });
             this.lastAttackTime = currentTime; // Update last swing time
         }
 
@@ -121,11 +135,19 @@ export default class FightScene extends Phaser.Scene {
         let xOffset = player.flipX ? -8 : 8; // Adjust offset based on facing direction
         let sword = this.physics.add.sprite(player.x + xOffset, player.y, 'sword');
         sword.body.setAllowGravity(false);
+        sword.body.enable = false; // Disable physics body by default
         return sword;
     }
 
     updateSwordPosition() {
         this.playerSword.x = this.player.x + (this.player.flipX ? -8 : 8);
         this.playerSword.y = this.player.y - 4;
+    }
+
+    makeEnemyRed(opponent) {
+        opponent.setTint(0xff0000); // Set to red
+        this.time.delayedCall(200, () => {
+            opponent.clearTint(); // Remove tint after 200ms
+        });
     }
 }
