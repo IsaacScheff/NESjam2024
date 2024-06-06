@@ -92,7 +92,6 @@ export default class FightScene extends Phaser.Scene {
 
         this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
             if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
-                //this.makeEnemyRed(opponent); //this.damageEnemy(opponent);
                 this.damageOpponent();
                 opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
             }
@@ -102,7 +101,6 @@ export default class FightScene extends Phaser.Scene {
             this.damagePlayer();
         });
 
-        // Set up controls
         this.setupControls();
     }
 
@@ -119,15 +117,8 @@ export default class FightScene extends Phaser.Scene {
             this.jump();
         }
 
-        //const currentTime = this.time.now;
         if (Phaser.Input.Keyboard.JustDown(this.keys.swing)) {
             this.attack();
-            // && currentTime > this.lastAttackTime + this.attackCooldown) {
-            // this.playerSword.body.enable = true; // Enable physics body
-            // this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
-            //     this.playerSword.body.enable = false; // Disable physics body after animation
-            // });
-            // this.lastAttackTime = currentTime; // Update last swing time
         }
 
         if (this.gamepad) {
@@ -199,7 +190,7 @@ export default class FightScene extends Phaser.Scene {
     createSword(player) {
         // Offset the sword sprite to be in front of the player based on direction
         let xOffset = player.flipX ? -8 : 8; // Adjust offset based on facing direction
-        let sword = this.physics.add.sprite(player.x + xOffset, player.y, 'sword');
+        let sword = this.physics.add.sprite(player.x + xOffset, player.y - 4, 'sword');
         sword.body.setAllowGravity(false);
         sword.body.enable = false; // Disable physics body by default
         return sword;
@@ -208,6 +199,8 @@ export default class FightScene extends Phaser.Scene {
     updateSwordPosition() {
         this.playerSword.x = this.player.x + (this.player.flipX ? -8 : 8);
         this.playerSword.y = this.player.y - 4;
+
+        this.playerSword.flipX = this.player.flipX;
     }
 
     moveLeft() {
@@ -240,12 +233,13 @@ export default class FightScene extends Phaser.Scene {
             this.lastAttackTime = currentTime;
         }
     }
-    
+
     damagePlayer() {
         if (this.playerHealth > 0 && !this.playerInvulnerable) {
             this.playerHealth--;
             this.playerInvulnerable = true;
             this.blink(this.player, () => { this.playerInvulnerable = false; });
+            this.blink(this.playerSword, () => {});
     
             let heart = this.playerHearts.getChildren()[this.playerHealth];
             if (heart) {
