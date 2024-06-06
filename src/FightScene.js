@@ -4,7 +4,6 @@ export default class FightScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FightScene' });
 
-
         this.lastAttackTime = 0;  // Timestamp of the last swing
         this.attackCooldown = 1000; // Cooldown time in milliseconds (1 second)
     }
@@ -22,8 +21,9 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('heart', 'assets/images/Heart.png');
     }
 
-    create() {
+    create(data) {
         this.cameras.main.setBackgroundColor('#F87858');
+        this.attacker = this.game.registry.get('attacker');
 
         this.playerHealth = 3;
         this.opponentHealth = 3;
@@ -55,20 +55,22 @@ export default class FightScene extends Phaser.Scene {
 
         this.playerSword = this.createSword(this.player);
 
-        this.anims.create({
-            key: 'playerSwordSwing',
-            frames: [
-                { key: 'sword' },
-                { key: 'swordSmear' },
-                { key: 'swordThrust' },
-                { key: 'swordThrust' },
-                { key: 'swordThrust' },
-                { key: 'swordSmear' },
-                { key: 'sword' }
-            ],
-            frameRate: 20,  
-            repeat: 0 
-        });
+        if (!this.anims.exists('playerSwordSwing')) {
+            this.anims.create({
+                key: 'playerSwordSwing',
+                frames: [
+                    { key: 'sword' },
+                    { key: 'swordSmear' },
+                    { key: 'swordThrust' },
+                    { key: 'swordThrust' },
+                    { key: 'swordThrust' },
+                    { key: 'swordSmear' },
+                    { key: 'sword' }
+                ],
+                frameRate: 20,
+                repeat: 0
+            });
+        }
 
         // Create opponent pawn
         let opponentPawn = this.physics.add.sprite(200, 100, 'b_p'); 
@@ -194,8 +196,8 @@ export default class FightScene extends Phaser.Scene {
     
             if (this.playerHealth === 0) {
                 // Player dies, opponent wins
-                //this.game.registry.set('fightWinner', 'defender');
-                //this.scene.switch('MainScene');
+                this.game.registry.set('fightWinner', (this.attacker === 'player' ? 'defender' : 'attacker'));
+                this.scene.switch('ChessScene');
             }
         }
     }
@@ -213,8 +215,8 @@ export default class FightScene extends Phaser.Scene {
     
             if (this.opponentHealth === 0) {
                 // Opponent dies, player wins
-                //this.game.registry.set('fightWinner', 'attacker');
-                //this.scene.switch('MainScene');
+                this.game.registry.set('fightWinner', (this.attacker === 'opponent' ? 'defender' : 'attacker'));
+                this.scene.switch('ChessScene');
             }
         }
     }

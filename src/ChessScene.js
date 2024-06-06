@@ -1,9 +1,9 @@
 import { Chess } from 'chess.js' 
 import { makeRandomMove } from './ai/randomMoveAI.js';
 
-export default class MainScene extends Phaser.Scene {
+export default class ChessScene extends Phaser.Scene {
     constructor() {
-        super("MainScene");
+        super("ChessScene");
         this.selectedPiece = null;
         this.playerTurn = true;
     }
@@ -220,7 +220,8 @@ export default class MainScene extends Phaser.Scene {
             this.endTurn();  // Continue to the next turn without entering the fight scene
         } else {
             this.playerTurn = !this.playerTurn; // Toggle player turn as we are not calling endTurn if we enter the fight scene
-            this.scene.switch('FightScene');
+            this.game.registry.set('attacker', (!this.playerTurn ? 'player' : 'opponent')); //these have to be backwards as we're toggling turn above
+            this.scene.switch('TransitionScene');
         }
     }
 
