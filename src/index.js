@@ -22,8 +22,8 @@ const config = {
     input: {
         gamepad: true
     },
-    scene: [MainMenuScene, ChessScene, FightScene, TransitionScene]
-    //scene: [FightScene]
+    //scene: [MainMenuScene, ChessScene, FightScene, TransitionScene]
+    scene: [FightScene]
 };
 
 new Phaser.Game(config);

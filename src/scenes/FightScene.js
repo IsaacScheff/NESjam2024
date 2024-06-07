@@ -28,6 +28,15 @@ export default class FightScene extends Phaser.Scene {
         this.gamepadButtons = {};
         
         this.cameras.main.setBackgroundColor('#F87858');
+        const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+        const screenHeight = this.sys.game.config.height;
+        const screenWidth = this.sys.game.config.width;
+        const barHeight = screenHeight / 10;
+        graphics.fillRect(0, 0, screenWidth, barHeight);
+
+        this.add.bitmapText(10, 5, 'pixelFont', 'PLAYER', 8);
+        this.add.bitmapText(120, 5, 'pixelFont', 'OPPONENT', 8);
+
         this.attacker = this.game.registry.get('attacker');
 
         this.playerHealth = 3;
@@ -39,18 +48,18 @@ export default class FightScene extends Phaser.Scene {
             key: 'heart',
             repeat: this.playerHealth - 1,
             setXY: {
-                x: 10,
-                y: 10,
-                stepX: 16
+                x: 68,
+                y: 11,
+                stepX: 12
             }
         });
         this.opponentHearts = this.add.group({
             key: 'violetHeart',
             repeat: this.opponentHealth - 1,
             setXY: {
-                x: 10,
-                y: 30,
-                stepX: 16
+                x: 194,
+                y: 11,
+                stepX: 12
             }
         });
 
