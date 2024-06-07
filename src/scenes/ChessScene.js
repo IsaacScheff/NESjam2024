@@ -203,6 +203,10 @@ export default class ChessScene extends Phaser.Scene {
     
                     // Check if the move is a capture
                     if (move.flags.includes('c')) {
+                        this.game.registry.set('fightData', {
+                            white: `${move.piece}`,
+                            black: `${move.captured}`
+                        });
                         this.handleCapture();
                     } else {
                         this.endTurn();
@@ -264,6 +268,10 @@ export default class ChessScene extends Phaser.Scene {
                     this.placePieces();
                     // Check if the AI's move was a capture
                     if (move.flags.includes('c')) {
+                        this.game.registry.set('fightData', {
+                            white: `${move.captured}`,
+                            black: `${move.piece}` 
+                        });
                         this.handleCapture();  
                     } else {
                         this.endTurn();
@@ -299,7 +307,7 @@ export default class ChessScene extends Phaser.Scene {
 
     checkTurn() {
         const winner = this.game.registry.get('fightWinner');
-        console.log("Winner from fight: ", winner);
+        //console.log("Winner from fight: ", winner);
         if (winner === 'defender') {
             this.handleDefenderWin(winner);
         } else if (!this.playerTurn) {
@@ -310,7 +318,7 @@ export default class ChessScene extends Phaser.Scene {
     handleDefenderWin() {
         this.game.registry.set('fightWinner', null);
         const lastMove = this.chess.history({ verbose: true }).pop();
-        console.log(lastMove);
+        //console.log(lastMove);
     
         this.chess.undo();
         var currentFEN = this.chess.fen();
@@ -320,7 +328,7 @@ export default class ChessScene extends Phaser.Scene {
         try {
             this.chess.load(newFEN);
             if (this.chess.inCheck()) {
-                console.log("King is in check, player must move again.");
+                //console.log("King is in check, player must move again.");
                 this.playerTurn = !this.playerTurn;
                 if(!this.playerTurn){
                     this.opponentTurn();
@@ -403,7 +411,6 @@ export default class ChessScene extends Phaser.Scene {
     }
 
     updateFenFromBoardArray(boardArray, currentFen) {
-        console.log(currentFen);
         const parts = currentFen.split(' ');
         const boardPart = this.arrayToFen(boardArray);  // Convert array back to FEN board part
         parts[0] = boardPart;  // Replace the board part of the existing FEN

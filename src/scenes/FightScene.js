@@ -37,10 +37,17 @@ export default class FightScene extends Phaser.Scene {
         this.add.bitmapText(10, 5, 'pixelFont', 'PLAYER', 8);
         this.add.bitmapText(120, 5, 'pixelFont', 'OPPONENT', 8);
 
-        this.attacker = this.game.registry.get('attacker');
+        const fightData = this.game.registry.get('fightData');
+        this.playerHealth = healthMap[fightData.white] || 1;  // Default to 1 in case piece type is undefined
+        this.opponentHealth = healthMap[fightData.black] || 1;
 
-        this.playerHealth = 3;
-        this.opponentHealth = 3;
+        this.attacker = this.game.registry.get('attacker');
+        if(this.attacker == 'player'){
+            this.playerHealth += 1;
+        } else {
+            this.opponentHealth += 1;
+        }
+
         this.playerInvulnerable = false;
         this.opponentInvulnerable = false;
 
@@ -50,7 +57,7 @@ export default class FightScene extends Phaser.Scene {
             setXY: {
                 x: 68,
                 y: 11,
-                stepX: 12
+                stepX: 10
             }
         });
         this.opponentHearts = this.add.group({
@@ -59,7 +66,7 @@ export default class FightScene extends Phaser.Scene {
             setXY: {
                 x: 194,
                 y: 11,
-                stepX: 12
+                stepX: 10
             }
         });
 
@@ -300,3 +307,11 @@ export default class FightScene extends Phaser.Scene {
     }
 
 }
+
+const healthMap = {
+    'p': 2,  // Pawn
+    'n': 3,  // Knight
+    'b': 3,  // Bishop
+    'r': 3,  // Rook
+    'q': 4,  // Queen
+};
