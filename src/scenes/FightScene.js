@@ -13,7 +13,9 @@ export default class FightScene extends Phaser.Scene {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('stone', 'assets/images/StoneBlock1.png');
         this.load.image('w_p', 'assets/images/WhitePawn.png');
-        this.load.image('b_p', 'assets/images/BlackPawn.png'); 
+        this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
+        this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
+        this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
 
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
@@ -27,7 +29,7 @@ export default class FightScene extends Phaser.Scene {
         setupGamepad(this);
         this.gamepadButtons = {};
         
-        this.cameras.main.setBackgroundColor('#F87858');
+        this.cameras.main.setBackgroundColor('#BCBCBC');
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
         const screenHeight = this.sys.game.config.height;
         const screenWidth = this.sys.game.config.width;
@@ -93,9 +95,25 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
+        if (!this.anims.exists('pyroPawn')) {
+            this.anims.create({
+                key: 'pyroPawn',
+                frames: [
+                    { key: 'pyroPawn1' },
+                    { key: 'pyroPawn2' },
+                    { key: 'pyroPawn3' }
+                ],
+                frameRate: 10,
+                repeat: -1
+            });
+        }
+
         // Create opponent pawn
-        let opponentPawn = this.physics.add.sprite(200, 100, 'b_p'); 
+        let opponentPawn = this.physics.add.sprite(200, 100, 'pyroPawn'); 
         opponentPawn.setCollideWorldBounds(true);
+        opponentPawn.play('pyroPawn'); 
+        opponentPawn.body.setSize(16, 20);
+        opponentPawn.body.setOffset((opponentPawn.width - 16) / 2, (opponentPawn.height - 20) / 2);
         this.physics.add.collider(opponentPawn, this.tiles);
 
         // Initialize AI for the opponent pawn
@@ -313,5 +331,5 @@ const healthMap = {
     'n': 3,  // Knight
     'b': 3,  // Bishop
     'r': 3,  // Rook
-    'q': 4,  // Queen
+    'q': 3,  // Queen
 };
