@@ -20,6 +20,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
 
         this.load.image('heart', 'assets/images/Heart.png');
+        this.load.image('violetHeart', 'assets/images/VioletHeart.png');
     }
 
     create(data) {
@@ -44,7 +45,7 @@ export default class FightScene extends Phaser.Scene {
             }
         });
         this.opponentHearts = this.add.group({
-            key: 'heart',
+            key: 'violetHeart',
             repeat: this.opponentHealth - 1,
             setXY: {
                 x: 10,
