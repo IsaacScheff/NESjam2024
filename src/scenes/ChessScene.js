@@ -143,6 +143,10 @@ export default class ChessScene extends Phaser.Scene {
             this.handleGamepadInput(0, 'A');
             this.handleGamepadInput(2, 'B');
         }
+
+        if(this.playerTurn){
+
+        }
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -292,6 +296,11 @@ export default class ChessScene extends Phaser.Scene {
             this.endTurn();  // Continue to the next turn without entering the fight scene
         } else {
             this.playerTurn = !this.playerTurn; // Toggle player turn as we are not calling endTurn if we enter the fight scene
+            if(this.playerTurn){ //also have to set visibility here since endTurn isn't called
+                this.cursorSprite.setVisible(true); 
+            } else {
+                this.cursorSprite.setVisible(false); 
+            }
             this.game.registry.set('attacker', (!this.playerTurn ? 'player' : 'opponent')); //these have to be backwards as we're toggling turn above
             this.scene.switch('TransitionScene');
         }
