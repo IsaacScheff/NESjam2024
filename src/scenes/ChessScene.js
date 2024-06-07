@@ -28,6 +28,9 @@ export default class ChessScene extends Phaser.Scene {
         this.load.image('cursorOuter', 'assets/images/CursorOuter.png');
         this.load.image('cursorMiddle', 'assets/images/CursorMiddle.png');
         this.load.image('cursorInner', 'assets/images/CursorInner.png');
+
+        this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
+        this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
     }
 
     create() {
@@ -189,6 +192,7 @@ export default class ChessScene extends Phaser.Scene {
                 });
         
                 if (move) {
+                    this.sound.play("placePiece");
                     this.placePieces();  // Update the board visuals
     
                     // Check if the move is a capture
@@ -199,11 +203,11 @@ export default class ChessScene extends Phaser.Scene {
                     }
                 } else {
                     console.log('Invalid move attempted');
-                    // Optionally play error sound
+                    this.sound.play("illegalMove");
                 }
             } catch (error) {
                 console.log('Error during move:', error.message);
-                // Optionally play error sound
+                this.sound.play("illegalMove");
             }
     
             // Deselect piece regardless of move success or failure
@@ -238,6 +242,7 @@ export default class ChessScene extends Phaser.Scene {
             this.time.delayedCall(1500, () => {
                 const move = makeRandomMove(this.chess); 
                 if (move) {
+                    this.sound.play("placePiece");
                     this.placePieces();
                     // Check if the AI's move was a capture
                     if (move.flags.includes('c')) {
