@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import ChessScene from './ChessScene';
-import FightScene from './FightScene';
-import TransitionScene from './TransitionScene';
+import ChessScene from './scenes/ChessScene';
+import FightScene from './scenes/FightScene';
+import MainMenuScene from './scenes/MainMenuScene';
+import TransitionScene from './scenes/TransitionScene';
 
 const config = {
     type: Phaser.AUTO,
@@ -21,7 +22,7 @@ const config = {
     input: {
         gamepad: true
     },
-    scene: [ChessScene, FightScene, TransitionScene]
+    scene: [MainMenuScene, ChessScene, FightScene, TransitionScene]
     //scene: [FightScene]
 };
 

@@ -1,4 +1,5 @@
-import BasePawnAI from "./ai/basePawnAI";
+import BasePawnAI from "../ai/basePawnAI";
+import { setupGamepad } from "../GamepadHandler";
 
 export default class FightScene extends Phaser.Scene {
     constructor() {
@@ -22,7 +23,7 @@ export default class FightScene extends Phaser.Scene {
     }
 
     create(data) {
-        this.setupGamepad();
+        setupGamepad(this);
         this.gamepadButtons = {};
         
         this.cameras.main.setBackgroundColor('#F87858');
@@ -127,8 +128,8 @@ export default class FightScene extends Phaser.Scene {
             this.handleGamepadInput(12, 'up');
             this.handleGamepadInput(13, 'down');
 
-            this.handleGamepadInput(1, 'A');
-            this.handleGamepadInput(0, 'B');
+            this.handleGamepadInput(0, 'A');
+            this.handleGamepadInput(2, 'B');
         }
 
         this.updateSwordPosition();
@@ -288,27 +289,4 @@ export default class FightScene extends Phaser.Scene {
         });
     }
 
-    setupGamepad() {
-        // Check if any gamepad is already connected
-        if (this.input.gamepad.total > 0) {
-            this.gamepad = this.input.gamepad.pad1;
-            console.log('Gamepad connected!');
-        } else {
-            console.log('No gamepad connected at start.');
-        }
-    
-        // Listen for gamepad connection
-        this.input.gamepad.once('connected', (pad) => {
-            this.gamepad = pad;
-            console.log('Gamepad connected during scene!');
-        });
-    
-        // Optional: Listen for gamepad disconnection
-        this.input.gamepad.once('disconnected', (pad) => {
-            if (this.gamepad === pad) {
-                this.gamepad = null;
-                console.log('Gamepad disconnected!');
-            }
-        });
-    }
 }

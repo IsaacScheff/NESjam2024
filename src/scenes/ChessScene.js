@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js' 
-import { makeRandomMove } from './ai/randomMoveAI.js';
+import { makeRandomMove } from '../ai/randomMoveAI.js';
+import { setupGamepad } from '../GamepadHandler.js';
 
 export default class ChessScene extends Phaser.Scene {
     constructor() {
@@ -30,7 +31,7 @@ export default class ChessScene extends Phaser.Scene {
     }
 
     create() {
-        this.setupGamepad();
+        setupGamepad(this);
         this.gamepadButtons = {};
 
         this.chess = new Chess();
@@ -134,7 +135,7 @@ export default class ChessScene extends Phaser.Scene {
             this.handleGamepadInput(12, 'up');
             this.handleGamepadInput(13, 'down');
 
-            this.handleGamepadInput(1, 'A');
+            this.handleGamepadInput(0, 'A');
         }
     }
     
@@ -396,30 +397,6 @@ export default class ChessScene extends Phaser.Scene {
         const parts = fen.split(' ');
         parts[1] = parts[1] === 'w' ? 'b' : 'w'; // Toggle between 'w' (white) and 'b' (black)
         return parts.join(' ');
-    }
-
-    setupGamepad() {
-        // Check if any gamepad is already connected
-        if (this.input.gamepad.total > 0) {
-            this.gamepad = this.input.gamepad.pad1;
-            console.log('Gamepad connected!');
-        } else {
-            console.log('No gamepad connected at start.');
-        }
-    
-        // Listen for gamepad connection
-        this.input.gamepad.once('connected', (pad) => {
-            this.gamepad = pad;
-            console.log('Gamepad connected during scene!');
-        });
-    
-        // Optional: Listen for gamepad disconnection
-        this.input.gamepad.once('disconnected', (pad) => {
-            if (this.gamepad === pad) {
-                this.gamepad = null;
-                console.log('Gamepad disconnected!');
-            }
-        });
     }
       
 }
