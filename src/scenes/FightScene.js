@@ -5,8 +5,8 @@ export default class FightScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FightScene' });
 
-        this.lastAttackTime = 0;  // Timestamp of the last swing
-        this.attackCooldown = 1000; // Cooldown time in milliseconds (1 second)
+        this.lastAttackTime = 0;  
+        this.attackCooldown = 1000; // Cooldown time 1 second
     }
 
     preload() {
@@ -20,6 +20,9 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
+
+        this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -105,6 +108,24 @@ export default class FightScene extends Phaser.Scene {
                 ],
                 frameRate: 10,
                 repeat: -1
+            });
+        }
+
+        if (!this.anims.exists('blackPawnBreaking')) {
+            this.anims.create({
+                key: 'blackPawnBreaking',
+                frames: this.anims.generateFrameNumbers('blackPawnBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+    
+        if (!this.anims.exists('whitePawnBreaking')) {
+            this.anims.create({
+                key: 'whitePawnBreaking',
+                frames: this.anims.generateFrameNumbers('whitePawnBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
             });
         }
 
@@ -283,9 +304,22 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.playerHealth === 0) {
-                // Player dies, opponent wins
+                this.player.setActive(false).setVisible(false); // Hide the player
+                this.playerSword.setActive(false).setVisible(false); // Hide the sword
+    
+                // Create the breaking animation sprite at the player's last position
+                let breakingSprite = this.add.sprite(this.player.x, this.player.y, 'whitePawnBreak');
+                breakingSprite.play('whitePawnBreaking');
+    
                 this.game.registry.set('fightWinner', (this.attacker === 'player' ? 'defender' : 'attacker'));
-                this.scene.switch('ChessScene');
+    
+                this.time.delayedCall(2000, () => {
+                    this.scene.switch('ChessScene');
+                });
+    
+                breakingSprite.on('animationcomplete', () => {
+                    breakingSprite.destroy(); 
+                });
             }
         }
     }
@@ -302,9 +336,23 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.opponentHealth === 0) {
-                // Opponent dies, player wins
+                this.opponentAI.sprite.setActive(false).setVisible(false); 
+                this.opponentAI.sprite.body.setEnable(false);
+    
+                let breakingSprite = this.add.sprite(this.opponentAI.sprite.x, this.opponentAI.sprite.y, 'blackPawnBreak');
+                this.playerInvulnerable = true; //otherwise player takes damage from invisible enemy
+                breakingSprite.play('blackPawnBreaking');
+    
                 this.game.registry.set('fightWinner', (this.attacker === 'opponent' ? 'defender' : 'attacker'));
-                this.scene.switch('ChessScene');
+
+                breakingSprite.on('animationcomplete', () => {
+                    breakingSprite.destroy();
+                });
+    
+                this.time.delayedCall(2000, () => {
+                    this.scene.switch('ChessScene');
+                });
+
             }
         }
     }
