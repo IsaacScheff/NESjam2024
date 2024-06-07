@@ -96,6 +96,7 @@ export default class ChessScene extends Phaser.Scene {
         this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         this.input.keyboard.on('keydown-J', this.handleSelection, this);
+        this.input.keyboard.on('keydown-H', this.unselectPiece, this);
 
     }
    
@@ -140,6 +141,7 @@ export default class ChessScene extends Phaser.Scene {
             this.handleGamepadInput(13, 'down');
 
             this.handleGamepadInput(0, 'A');
+            this.handleGamepadInput(2, 'B');
         }
     }
     
@@ -175,6 +177,9 @@ export default class ChessScene extends Phaser.Scene {
                     break;
                 case 'A':
                     this.handleSelection();
+                    break;
+                case 'B':
+                    this.unselectPiece();
             }
         }
     
@@ -415,6 +420,13 @@ export default class ChessScene extends Phaser.Scene {
         const parts = fen.split(' ');
         parts[1] = parts[1] === 'w' ? 'b' : 'w'; // Toggle between 'w' (white) and 'b' (black)
         return parts.join(' ');
+    }
+
+    unselectPiece() {
+        if (this.selectedPiece) {
+            this.toggleCursor(false);
+            this.selectedPiece = null;
+        }
     }
       
 }
