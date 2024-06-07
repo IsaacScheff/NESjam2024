@@ -28,6 +28,7 @@ export default class ChessScene extends Phaser.Scene {
         this.load.image('cursorOuter', 'assets/images/CursorOuter.png');
         this.load.image('cursorMiddle', 'assets/images/CursorMiddle.png');
         this.load.image('cursorInner', 'assets/images/CursorInner.png');
+        this.load.image('cursorSelected', 'assets/images/CursorSelection.png');
 
         this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
         this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
@@ -211,12 +212,24 @@ export default class ChessScene extends Phaser.Scene {
             }
     
             // Deselect piece regardless of move success or failure
+            this.toggleCursor(false);
             this.selectedPiece = null;
         } else if (piece && piece.color === 'w') {
             // Select the piece if it is a white piece
             this.selectedPiece = { col: this.cursorCol, row: this.cursorRow };
+            this.toggleCursor(true);
         }
-    }      
+    }  
+    
+    toggleCursor(isSelected) {
+        if (isSelected) {
+            this.cursorSprite.setTexture('cursorSelected');
+            this.cursorSprite.anims.pause();
+        } else {
+            this.cursorSprite.setTexture('cursorBase');
+            this.cursorSprite.anims.resume();
+        }
+    }
     
     getPieceAt(col, row) {
         return this.chess.get(this.squareToCoords({ col, row }));
@@ -228,12 +241,12 @@ export default class ChessScene extends Phaser.Scene {
 
     endTurn() {
         if (this.playerTurn) {
-            //hide/destroy cursor
-            this.playerTurn = false;  
+            this.playerTurn = false; 
+            this.cursorSprite.setVisible(false); 
             this.opponentTurn(); 
         } else {
-            //remake cursor
             this.playerTurn = true; 
+            this.cursorSprite.setVisible(true); 
         }
     }
 
