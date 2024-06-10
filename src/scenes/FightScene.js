@@ -27,6 +27,8 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('blackKnightBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
 
         this.load.image('heart', 'assets/images/Heart.png');
@@ -184,7 +186,24 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        // Create opponent pawn
+        if (!this.anims.exists('blackBishopBreaking')) {
+            this.anims.create({
+                key: 'blackBishopBreaking',
+                frames: this.anims.generateFrameNumbers('blackBishopBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+    
+        if (!this.anims.exists('whiteBishopBreaking')) {
+            this.anims.create({
+                key: 'whiteBishopBreaking',
+                frames: this.anims.generateFrameNumbers('whiteBishopBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+
         this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
         this.opponentPiece.setCollideWorldBounds(true);
         if (opponentSpriteKey === 'pyroKnight') {
@@ -204,7 +223,7 @@ export default class FightScene extends Phaser.Scene {
         this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
         this.physics.add.collider(this.opponentPiece, this.tiles);
 
-        // Initialize AI for the opponent pawn
+        // Initialize AI for the opponenent piece
         this.opponentAI = new BaseEnemyAI(this, this.opponentPiece, {
             minX: 16,
             maxX: this.sys.game.config.width - 16, 
@@ -397,10 +416,15 @@ export default class FightScene extends Phaser.Scene {
                 // Determine the appropriate breaking sprite based on the fight data
                 let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
                 const fightData = this.game.registry.get('fightData');
-                if (fightData.white === 'n') {  // if the white piece is a knight
-                    breakingSpriteKey = 'whiteKnightBreak';  // use the knight breaking sprite
+                switch(fightData.white) {
+                    case 'n':
+                        breakingSpriteKey = 'whiteKnightBreak';  
+                        break;
+                    case 'b':
+                        breakingSpriteKey = 'whiteBishopBreak';
+                        break;
                 }
-    
+
                 // Create the breaking animation sprite at the player's last position
                 let breakingSprite = this.add.sprite(this.player.x, this.player.y, breakingSpriteKey);
                 breakingSprite.play(breakingSpriteKey + 'ing'); // Append 'ing' to match the animation key format
@@ -437,8 +461,13 @@ export default class FightScene extends Phaser.Scene {
             if (this.opponentHealth === 0) {
                 const fightData = this.game.registry.get('fightData');
                 let breakingSpriteKey = 'blackPawnBreaking'; // Default to pawn breaking animation
-                if (fightData.black === 'n') {
-                    breakingSpriteKey = 'blackKnightBreaking'; // Use knight breaking animation if black piece is a knight
+                switch(fightData.black) {
+                    case 'n':
+                        breakingSpriteKey = 'blackKnightBreaking';  
+                        break;
+                    case 'b':
+                        breakingSpriteKey = 'blackBishopBreaking';
+                        break;
                 }
 
                 this.opponentAI.sprite.setActive(false).setVisible(false); 
