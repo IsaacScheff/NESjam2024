@@ -22,6 +22,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
+        this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
 
         this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
@@ -107,10 +108,6 @@ export default class FightScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
-        if(fightData.white === 'p') {
-            this.playerSword = this.createSword(this.player);
-        }
-
         if (!this.anims.exists('playerSwordSwing')) {
             this.anims.create({
                 key: 'playerSwordSwing',
@@ -125,6 +122,15 @@ export default class FightScene extends Phaser.Scene {
                 ],
                 frameRate: 20,
                 repeat: 0
+            });
+        }
+
+        if(!this.anims.exists('bishopLightBall')) {
+            this.anims.create({
+                key: 'bishopLightBall',
+                frames: this.anims.generateFrameNumbers('bishopLightBall', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
             });
         }
 
@@ -223,6 +229,12 @@ export default class FightScene extends Phaser.Scene {
         this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
         this.physics.add.collider(this.opponentPiece, this.tiles);
 
+        if(fightData.white === 'p') {
+            this.playerSword = this.createSword(this.player);
+        } else if (fightData.white === 'b') {
+            this.bishopLightBall = this.createLightBall(this.player);
+        }
+
         // Initialize AI for the opponenent piece
         this.opponentAI = new BaseEnemyAI(this, this.opponentPiece, {
             minX: 16,
@@ -238,7 +250,7 @@ export default class FightScene extends Phaser.Scene {
             this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
                 if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
                     this.damageOpponent();
-                    opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
+                    opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect (opponent update function appears to counteract this right now)
                 }
             });
         }
@@ -250,6 +262,12 @@ export default class FightScene extends Phaser.Scene {
                 this.damagePlayer();  // Normal damage logic if not a jump attack or not a knight
             }
         });
+
+        if(this.bishopLightBall) {
+            this.physics.add.collider(this.bishopLightBall, this.opponentAI.sprite, () => {
+                this.damageOpponent();
+            });
+        }
 
         this.setupControls();
     }
@@ -281,8 +299,15 @@ export default class FightScene extends Phaser.Scene {
             this.handleGamepadInput(2, 'B');
         }
 
-        if(this.playerSword) {
+        if (this.playerSword) {
             this.updateSwordPosition();
+        }
+
+        if (this.bishopLightBall && this.player.texture.key === 'w_b') {
+            const radius = 20;  // Radius of the orbit
+            const speed = 0.003;  // Speed of the orbit
+            this.bishopLightBall.x = this.player.x + Math.cos(this.time.now * speed) * radius;
+            this.bishopLightBall.y = this.player.y + Math.sin(this.time.now * speed) * radius;
         }
 
         // Update the AI
@@ -381,7 +406,6 @@ export default class FightScene extends Phaser.Scene {
 
     attack() {
         const currentTime = this.time.now;
-        console.log(this.playerSword);
         if (currentTime > this.lastAttackTime + this.attackCooldown) {
             if(this.playerSword) {
                 this.playerSword.body.enable = true;
@@ -412,6 +436,9 @@ export default class FightScene extends Phaser.Scene {
                 if(this.playerSword) {
                     this.playerSword.setActive(false).setVisible(false); 
                 }
+                if(this.bishopLightBall) {
+                    this.bishopLightBall.setActive(false).setVisible(false);
+                }
 
                 // Determine the appropriate breaking sprite based on the fight data
                 let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
@@ -439,6 +466,9 @@ export default class FightScene extends Phaser.Scene {
                 this.time.delayedCall(2000, () => {
                     if(this.playerSword) {
                         this.playerSword = null;
+                    }
+                    if(this.bishopLightBall) {
+                        this.bishopLightBall = null;
                     }
 
                     this.scene.switch('ChessScene');
@@ -490,6 +520,9 @@ export default class FightScene extends Phaser.Scene {
                     if(this.playerSword) {
                         this.playerSword = null;
                     }
+                    if(this.bishopLightBall) {
+                        this.bishopLightBall = null;
+                    }
 
                     this.scene.switch('ChessScene');
                 });
@@ -515,6 +548,15 @@ export default class FightScene extends Phaser.Scene {
 
     isPlayerAboveOpponent(player, opponent) {
         return player.body.bottom <= opponent.body.top + 10;  // Check if player is sufficiently above the opponent
+    }
+
+    createLightBall(bishop) {
+        const lightBall = this.physics.add.sprite(bishop.x, bishop.y, 'bishopLightBall');
+        lightBall.play('bishopLightBall');  
+        lightBall.setCircle(6);  //adjust size here
+        lightBall.body.setAllowGravity(false);
+    
+        return lightBall;
     }
 }
 
