@@ -356,6 +356,7 @@ export default class FightScene extends Phaser.Scene {
 
     attack() {
         const currentTime = this.time.now;
+        console.log(this.playerSword);
         if (currentTime > this.lastAttackTime + this.attackCooldown) {
             if(this.playerSword) {
                 this.playerSword.body.enable = true;
@@ -406,6 +407,10 @@ export default class FightScene extends Phaser.Scene {
                 });
     
                 this.time.delayedCall(2000, () => {
+                    if(this.playerSword) {
+                        this.playerSword = null;
+                    }
+
                     this.scene.switch('ChessScene');
                 });
             }
@@ -447,6 +452,10 @@ export default class FightScene extends Phaser.Scene {
                 });
     
                 this.time.delayedCall(2000, () => {
+                    if(this.playerSword) {
+                        this.playerSword = null;
+                    }
+
                     this.scene.switch('ChessScene');
                 });
 
