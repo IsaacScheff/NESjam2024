@@ -1,4 +1,4 @@
-import BasePawnAI from "../ai/basePawnAI";
+import BaseEnemyAI from "../ai/BaseEnemyAI";
 import { setupGamepad } from "../GamepadHandler";
 
 export default class FightScene extends Phaser.Scene {
@@ -24,8 +24,9 @@ export default class FightScene extends Phaser.Scene {
 
         this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('blackKnigthBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('blackKnightBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -86,6 +87,14 @@ export default class FightScene extends Phaser.Scene {
             isKnight = true;
         }
 
+        let opponentSpriteKey = 'pyroPawn'; // Default to pawn
+        let opponentBehaviour = 'normal'; // Default to normal pawn behavior
+
+        if (fightData.black === 'n') { // Check if black piece is a knight
+            opponentSpriteKey = 'pyroKnight';
+            opponentBehaviour = 'knight'; 
+        }
+
         this.tiles = this.createTiles();
         this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
@@ -121,6 +130,15 @@ export default class FightScene extends Phaser.Scene {
                 ],
                 frameRate: 10,
                 repeat: -1
+            });
+        }
+
+        if (!this.anims.exists('pyroKnight')) {
+            this.anims.create({
+                key: 'pyroKnight',
+                frames: this.anims.generateFrameNumbers('pyroKnight', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
             });
         }
 
@@ -161,19 +179,32 @@ export default class FightScene extends Phaser.Scene {
         }
 
         // Create opponent pawn
-        let opponentPawn = this.physics.add.sprite(200, 100, 'pyroPawn'); 
-        opponentPawn.setCollideWorldBounds(true);
-        opponentPawn.play('pyroPawn'); 
-        opponentPawn.body.setSize(16, 20);
-        opponentPawn.body.setOffset((opponentPawn.width - 16) / 2, (opponentPawn.height - 20) / 2);
-        this.physics.add.collider(opponentPawn, this.tiles);
+        this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
+        this.opponentPiece.setCollideWorldBounds(true);
+        if (opponentSpriteKey === 'pyroKnight') {
+            this.anims.create({
+                key: 'pyroKnight',
+                frames: this.anims.generateFrameNumbers('pyroKnight', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1
+            });
+            this.opponentPiece.play('pyroKnight');
+            this.opponentPiece.body.setSize(19, 18);
+        } else {
+            this.opponentPiece.play('pyroPawn');
+            this.opponentPiece.body.setSize(16, 20);
+        }
+        this.opponentPiece.body.setSize(16, 20);
+        this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
+        this.physics.add.collider(this.opponentPiece, this.tiles);
 
         // Initialize AI for the opponent pawn
-        this.opponentAI = new BasePawnAI(this, opponentPawn, {
+        this.opponentAI = new BaseEnemyAI(this, this.opponentPiece, {
             minX: 16,
             maxX: this.sys.game.config.width - 16, 
             velocity: 100,
-            jumpChance: 0.05
+            jumpChance: 0.05, //ignored for knights 
+            behaviorType: opponentBehaviour
         });
 
         this.physics.add.collider(this.player, this.tiles);
@@ -326,10 +357,12 @@ export default class FightScene extends Phaser.Scene {
     attack() {
         const currentTime = this.time.now;
         if (currentTime > this.lastAttackTime + this.attackCooldown) {
-            this.playerSword.body.enable = true;
-            this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
-                this.playerSword.body.enable = false;
-            });
+            if(this.playerSword) {
+                this.playerSword.body.enable = true;
+                this.playerSword.play('playerSwordSwing').once('animationcomplete', () => {
+                    this.playerSword.body.enable = false;
+                });
+            }
             this.lastAttackTime = currentTime;
         }
     }
@@ -391,13 +424,22 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.opponentHealth === 0) {
+                const fightData = this.game.registry.get('fightData');
+                let breakingSpriteKey = 'blackPawnBreaking'; // Default to pawn breaking animation
+                if (fightData.black === 'n') {
+                    breakingSpriteKey = 'blackKnightBreaking'; // Use knight breaking animation if black piece is a knight
+                }
+
                 this.opponentAI.sprite.setActive(false).setVisible(false); 
                 this.opponentAI.sprite.body.setEnable(false);
     
-                let breakingSprite = this.add.sprite(this.opponentAI.sprite.x, this.opponentAI.sprite.y, 'blackPawnBreak');
                 this.playerInvulnerable = true; //otherwise player takes damage from invisible enemy
-                breakingSprite.play('blackPawnBreaking');
-    
+                let breakingSprite = this.add.sprite(this.opponentAI.sprite.x, this.opponentAI.sprite.y, breakingSpriteKey);
+                breakingSprite.play(breakingSpriteKey);
+                breakingSprite.on('animationcomplete', () => {
+                    breakingSprite.destroy();
+                });
+            
                 this.game.registry.set('fightWinner', (this.attacker === 'opponent' ? 'defender' : 'attacker'));
 
                 breakingSprite.on('animationcomplete', () => {
