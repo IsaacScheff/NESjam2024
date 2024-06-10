@@ -117,6 +117,10 @@ export default class ChessScene extends Phaser.Scene {
                     let y = (row + 0.5) * this.squareSize + this.offSetY;
                     let sprite = this.add.image(x, y, pieceKey);
                     this.pieceSprites.push(sprite);  // Store reference to the sprite
+
+                    if (piece.type === 'n') { //flip the knights
+                        sprite.setFlipX(true);
+                    }
                 }
             }
         }

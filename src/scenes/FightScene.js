@@ -13,6 +13,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('stone', 'assets/images/StoneBlock1.png');
         this.load.image('w_p', 'assets/images/WhitePawn.png');
+        this.load.image('w_n', 'assets/images/WhiteKnight.png');
         this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
         this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
         this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
@@ -75,8 +76,14 @@ export default class FightScene extends Phaser.Scene {
             }
         });
 
+        // Choose sprite based on the type of white piece
+        let playerSpriteKey = 'w_p'; // default to pawn
+        if (fightData.white === 'n') {  // if the white piece is a knight
+            playerSpriteKey = 'w_n';  // use the knight sprite
+        }
+
         this.tiles = this.createTiles();
-        this.player = this.physics.add.sprite(100, 100, 'w_p');
+        this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
         this.playerSword = this.createSword(this.player);
