@@ -14,6 +14,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('stone', 'assets/images/StoneBlock1.png');
         this.load.image('w_p', 'assets/images/WhitePawn.png');
         this.load.image('w_n', 'assets/images/WhiteKnight.png');
+        this.load.image('w_b', 'asses/images/WhiteBishop.png');
         this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
         this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
         this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
@@ -82,9 +83,14 @@ export default class FightScene extends Phaser.Scene {
         // Choose sprite based on the type of white piece
         let playerSpriteKey = 'w_p'; // default to pawn
         let isKnight = false;  // Flag to indicate if the player is a knight
-        if (fightData.white === 'n') {  // if the white piece is a knight
-            playerSpriteKey = 'w_n';  
-            isKnight = true;
+        switch(fightData.white) {
+            case 'n':
+                playerSpriteKey = 'w_n';  
+                isKnight = true;
+                break;
+            case 'b':
+                playerSpriteKey = 'w_b'
+                break;
         }
 
         let opponentSpriteKey = 'pyroPawn'; // Default to pawn
