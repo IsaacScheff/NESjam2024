@@ -24,6 +24,8 @@ export default class FightScene extends Phaser.Scene {
 
         this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('blackKnigthBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -131,6 +133,24 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'whitePawnBreaking',
                 frames: this.anims.generateFrameNumbers('whitePawnBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+
+        if (!this.anims.exists('blackKnightBreaking')) {
+            this.anims.create({
+                key: 'blackKnightBreaking',
+                frames: this.anims.generateFrameNumbers('blackKnightBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+    
+        if (!this.anims.exists('whiteKnightBreaking')) {
+            this.anims.create({
+                key: 'whiteKnightBreaking',
+                frames: this.anims.generateFrameNumbers('whiteKnightBreak', { start: 0, end: 8 }), 
                 frameRate: 10,
                 repeat: 0 
             });
@@ -313,19 +333,27 @@ export default class FightScene extends Phaser.Scene {
             if (this.playerHealth === 0) {
                 this.player.setActive(false).setVisible(false); // Hide the player
                 this.playerSword.setActive(false).setVisible(false); // Hide the sword
+
+                // Determine the appropriate breaking sprite based on the fight data
+                let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
+                const fightData = this.game.registry.get('fightData');
+                if (fightData.white === 'n') {  // if the white piece is a knight
+                    breakingSpriteKey = 'whiteKnightBreak';  // use the knight breaking sprite
+                }
     
                 // Create the breaking animation sprite at the player's last position
-                let breakingSprite = this.add.sprite(this.player.x, this.player.y, 'whitePawnBreak');
-                breakingSprite.play('whitePawnBreaking');
+                let breakingSprite = this.add.sprite(this.player.x, this.player.y, breakingSpriteKey);
+                breakingSprite.play(breakingSpriteKey + 'ing'); // Append 'ing' to match the animation key format
+                breakingSprite.flipX = this.player.flipX;
     
                 this.game.registry.set('fightWinner', (this.attacker === 'player' ? 'defender' : 'attacker'));
+
+                breakingSprite.on('animationcomplete', () => {
+                    breakingSprite.destroy(); 
+                });
     
                 this.time.delayedCall(2000, () => {
                     this.scene.switch('ChessScene');
-                });
-    
-                breakingSprite.on('animationcomplete', () => {
-                    breakingSprite.destroy(); 
                 });
             }
         }
