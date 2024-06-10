@@ -80,15 +80,19 @@ export default class FightScene extends Phaser.Scene {
 
         // Choose sprite based on the type of white piece
         let playerSpriteKey = 'w_p'; // default to pawn
+        let isKnight = false;  // Flag to indicate if the player is a knight
         if (fightData.white === 'n') {  // if the white piece is a knight
-            playerSpriteKey = 'w_n';  // use the knight sprite
+            playerSpriteKey = 'w_n';  
+            isKnight = true;
         }
 
         this.tiles = this.createTiles();
         this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
-        this.playerSword = this.createSword(this.player);
+        if(fightData.white === 'p') {
+            this.playerSword = this.createSword(this.player);
+        }
 
         if (!this.anims.exists('playerSwordSwing')) {
             this.anims.create({
@@ -174,15 +178,21 @@ export default class FightScene extends Phaser.Scene {
 
         this.physics.add.collider(this.player, this.tiles);
 
-        this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
-            if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
-                this.damageOpponent();
-                opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
-            }
-        });
+        if(this.playerSword) {
+            this.physics.add.collider(this.playerSword, this.opponentAI.sprite, (sword, opponent) => {
+                if (sword.anims.isPlaying && sword.anims.currentAnim.key === 'playerSwordSwing') {
+                    this.damageOpponent();
+                    opponent.setVelocityX(300 * (opponent.flipX ? 1 : -1)); // Knockback effect
+                }
+            });
+        }
 
         this.physics.add.collider(this.player, this.opponentAI.sprite, (player, opponent) => {
-            this.damagePlayer();
+            if (isKnight && this.isPlayerAboveOpponent(player, opponent)) {
+                this.damageOpponent();  // Damage the opponent if the player is a knight and jumps on top
+            } else {
+                this.damagePlayer();  // Normal damage logic if not a jump attack or not a knight
+            }
         });
 
         this.setupControls();
@@ -215,7 +225,9 @@ export default class FightScene extends Phaser.Scene {
             this.handleGamepadInput(2, 'B');
         }
 
-        this.updateSwordPosition();
+        if(this.playerSword) {
+            this.updateSwordPosition();
+        }
 
         // Update the AI
         this.opponentAI.update();
@@ -290,15 +302,19 @@ export default class FightScene extends Phaser.Scene {
     moveLeft() {
         this.player.setVelocityX(-130);
         this.player.flipX = true;
-        this.playerSword.flipX = true;
-        this.updateSwordPosition();
+        if(this.playerSword) {
+            this.playerSword.flipX = true;
+            this.updateSwordPosition();
+        }
     }
 
     moveRight() {
         this.player.setVelocityX(130);
         this.player.flipX = false; 
-        this.playerSword.flipX = false;
-        this.updateSwordPosition();
+        if(this.playerSword) {
+            this.playerSword.flipX = false;
+            this.updateSwordPosition();
+        }
     }
 
     jump() {
@@ -323,7 +339,9 @@ export default class FightScene extends Phaser.Scene {
             this.playerHealth--;
             this.playerInvulnerable = true;
             this.blink(this.player, () => { this.playerInvulnerable = false; });
-            this.blink(this.playerSword, () => {});
+            if(this.playerSword) {
+                this.blink(this.playerSword, () => {});
+            }
     
             let heart = this.playerHearts.getChildren()[this.playerHealth];
             if (heart) {
@@ -332,7 +350,9 @@ export default class FightScene extends Phaser.Scene {
     
             if (this.playerHealth === 0) {
                 this.player.setActive(false).setVisible(false); // Hide the player
-                this.playerSword.setActive(false).setVisible(false); // Hide the sword
+                if(this.playerSword) {
+                    this.playerSword.setActive(false).setVisible(false); 
+                }
 
                 // Determine the appropriate breaking sprite based on the fight data
                 let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
@@ -407,6 +427,9 @@ export default class FightScene extends Phaser.Scene {
         });
     }
 
+    isPlayerAboveOpponent(player, opponent) {
+        return player.body.bottom <= opponent.body.top + 10;  // Check if player is sufficiently above the opponent
+    }
 }
 
 const healthMap = {
