@@ -23,6 +23,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
         this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
+        this.load.spritesheet('bishopFireBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
 
         this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
@@ -31,6 +32,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
+        this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -99,9 +101,14 @@ export default class FightScene extends Phaser.Scene {
         let opponentSpriteKey = 'pyroPawn'; // Default to pawn
         let opponentBehaviour = 'normal'; // Default to normal pawn behavior
 
-        if (fightData.black === 'n') { // Check if black piece is a knight
-            opponentSpriteKey = 'pyroKnight';
-            opponentBehaviour = 'knight'; 
+        switch(fightData.black) {
+            case 'n':
+                opponentSpriteKey = 'pyroKnight';
+                opponentBehaviour = 'knight';
+                break;
+            case 'b':
+                opponentSpriteKey = 'pyroBishop';
+                break;
         }
 
         this.tiles = this.createTiles();
@@ -134,6 +141,15 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
+        if(!this.anims.exists('bishopFireBall')) {
+            this.anims.create({
+                key: 'bishopFireBall',
+                frames: this.anims.generateFrameNumbers('bishopFireBall', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+
         if (!this.anims.exists('pyroPawn')) {
             this.anims.create({
                 key: 'pyroPawn',
@@ -151,6 +167,15 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'pyroKnight',
                 frames: this.anims.generateFrameNumbers('pyroKnight', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+
+        if (!this.anims.exists('pyroBishop')) {
+            this.anims.create({
+                key: 'pyroBishop',
+                frames: this.anims.generateFrameNumbers('pyroBishop', { start: 0, end: 2 }), 
                 frameRate: 10,
                 repeat: -1 
             });
@@ -212,20 +237,8 @@ export default class FightScene extends Phaser.Scene {
 
         this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
         this.opponentPiece.setCollideWorldBounds(true);
-        if (opponentSpriteKey === 'pyroKnight') {
-            this.anims.create({
-                key: 'pyroKnight',
-                frames: this.anims.generateFrameNumbers('pyroKnight', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1
-            });
-            this.opponentPiece.play('pyroKnight');
-            this.opponentPiece.body.setSize(19, 18);
-        } else {
-            this.opponentPiece.play('pyroPawn');
-            this.opponentPiece.body.setSize(16, 20);
-        }
-        this.opponentPiece.body.setSize(16, 20);
+        this.opponentPiece.play(opponentSpriteKey);
+        this.opponentPiece.body.setSize(this.opponentPiece.width, this.opponentPiece.height);
         this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
         this.physics.add.collider(this.opponentPiece, this.tiles);
 
@@ -233,6 +246,10 @@ export default class FightScene extends Phaser.Scene {
             this.playerSword = this.createSword(this.player);
         } else if (fightData.white === 'b') {
             this.bishopLightBall = this.createLightBall(this.player);
+        }
+
+        if (opponentSpriteKey === 'pyroBishop') {
+            this.bishopFireBall = this.createFireBall(this.opponentPiece);
         }
 
         // Initialize AI for the opponenent piece
@@ -308,6 +325,13 @@ export default class FightScene extends Phaser.Scene {
             const speed = 0.003;  // Speed of the orbit
             this.bishopLightBall.x = this.player.x + Math.cos(this.time.now * speed) * radius;
             this.bishopLightBall.y = this.player.y + Math.sin(this.time.now * speed) * radius;
+        }
+
+        if (this.bishopFireBall && this.opponentPiece.texture.key === 'pyroBishop') {
+            const radius = 20;  // Radius of the orbit
+            const speed = 0.003;  // Speed of the orbit
+            this.bishopFireBall.x = this.opponentPiece.x + Math.cos(this.time.now * speed) * radius;
+            this.bishopFireBall.y = this.opponentPiece.y + Math.sin(this.time.now * speed) * radius;
         }
 
         // Update the AI
@@ -489,6 +513,9 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.opponentHealth === 0) {
+                if(this.bishopFireBall) {
+                    this.bishopFireBall.setActive(false).setVisible(false);
+                }
                 const fightData = this.game.registry.get('fightData');
                 let breakingSpriteKey = 'blackPawnBreaking'; // Default to pawn breaking animation
                 switch(fightData.black) {
@@ -557,6 +584,17 @@ export default class FightScene extends Phaser.Scene {
         lightBall.body.setAllowGravity(false);
     
         return lightBall;
+    }
+
+    createFireBall(pyroPawn) {
+        const fireBall = this.physics.add.sprite(pyroPawn.x, pyroPawn.y, 'bishopFireBall');
+        fireBall.play('bishopFireBall');
+        fireBall.setCircle(6);  
+        fireBall.body.setAllowGravity(false);  
+
+        this.physics.add.overlap(fireBall, this.player, this.damagePlayer, null, this);
+    
+        return fireBall;
     }
 }
 
