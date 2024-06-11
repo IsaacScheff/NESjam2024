@@ -7,6 +7,7 @@ export default class ChessScene extends Phaser.Scene {
         super("ChessScene");
         this.selectedPiece = null;
         this.playerTurn = true;
+        this.allowMusic = true;
     }
 
     preload() {
@@ -32,11 +33,32 @@ export default class ChessScene extends Phaser.Scene {
 
         this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
         this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
+        this.load.audio('chessTheme', 'assets/sounds/ChessTheme.wav');
     }
 
     create() {
         setupGamepad(this);
         this.gamepadButtons = {};
+
+        this.themeMusic = this.sound.add('chessTheme');
+
+        this.musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 25.75,  // Start playback at 25.75 seconds in 
+            loop: true,
+            delay: 0
+        };
+
+        this.themeMusic.play(this.musicConfig);
+        this.events.on('wake', () => {
+            this.allowMusic = true;  // Reset flag when scene is awakened
+            if (!this.themeMusic.isPlaying) {
+                this.themeMusic.play(this.musicConfig);
+            }
+        });
 
         this.chess = new Chess();
         this.events.on('wake', this.checkTurn, this);
@@ -147,9 +169,9 @@ export default class ChessScene extends Phaser.Scene {
             this.handleGamepadInput(0, 'A');
             this.handleGamepadInput(2, 'B');
         }
-
-        if(this.playerTurn){
-
+        
+        if(!this.themeMusic.isPlaying && this.allowMusic) {
+            this.themeMusic.play(this.musicConfig);
         }
     }
     
@@ -306,6 +328,8 @@ export default class ChessScene extends Phaser.Scene {
                 this.cursorSprite.setVisible(false); 
             }
             this.game.registry.set('attacker', (!this.playerTurn ? 'player' : 'opponent')); //these have to be backwards as we're toggling turn above
+            this.allowMusic = false;
+            this.themeMusic.stop();
             this.scene.switch('TransitionScene');
         }
     }
