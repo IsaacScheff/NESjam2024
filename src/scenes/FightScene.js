@@ -15,6 +15,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('w_p', 'assets/images/WhitePawn.png');
         this.load.image('w_n', 'assets/images/WhiteKnight.png');
         this.load.image('w_b', 'asses/images/WhiteBishop.png');
+        this.load.image('w_r', 'assets/images/WhiteRook.png');
         this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
         this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
         this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
@@ -31,6 +32,8 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('blackRookBreak', 'assets/images/BlackRookBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
 
@@ -95,6 +98,9 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'b':
                 playerSpriteKey = 'w_b'
+                break;
+            case 'r':
+                playerSpriteKey = 'w_r'
                 break;
         }
 
@@ -230,6 +236,24 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'whiteBishopBreaking',
                 frames: this.anims.generateFrameNumbers('whiteBishopBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+
+        if (!this.anims.exists('blackRookBreaking')) {
+            this.anims.create({
+                key: 'blackRookBreaking',
+                frames: this.anims.generateFrameNumbers('blackRookBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+    
+        if (!this.anims.exists('whiteRookBreaking')) {
+            this.anims.create({
+                key: 'whiteRookBreaking',
+                frames: this.anims.generateFrameNumbers('whiteRookBreak', { start: 0, end: 8 }), 
                 frameRate: 10,
                 repeat: 0 
             });
@@ -474,6 +498,9 @@ export default class FightScene extends Phaser.Scene {
                     case 'b':
                         breakingSpriteKey = 'whiteBishopBreak';
                         break;
+                    case 'r':
+                        breakingSpriteKey = 'whiteRookBreak';
+                        break;
                 }
 
                 // Create the breaking animation sprite at the player's last position
@@ -524,6 +551,9 @@ export default class FightScene extends Phaser.Scene {
                         break;
                     case 'b':
                         breakingSpriteKey = 'blackBishopBreaking';
+                        break;
+                    case 'r':
+                        breakingSpriteKey = 'blackRookBreaking';
                         break;
                 }
 
