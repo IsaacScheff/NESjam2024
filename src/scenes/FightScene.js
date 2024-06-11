@@ -23,6 +23,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
+        this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
         this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
         this.load.spritesheet('bishopFireBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
 
@@ -461,6 +462,12 @@ export default class FightScene extends Phaser.Scene {
                     this.playerSword.body.enable = false;
                 });
             }
+            if (this.player.texture.key === 'w_r') { 
+                let projectile = this.createRookProjectile(this.player);
+                let velocityX = this.player.flipX ? -200 : 200; 
+                let velocityY = -50; // Initial upward force to create an arc
+                projectile.setVelocity(velocityX, velocityY);
+            }
             this.lastAttackTime = currentTime;
         }
     }
@@ -625,6 +632,24 @@ export default class FightScene extends Phaser.Scene {
         this.physics.add.overlap(fireBall, this.player, this.damagePlayer, null, this);
     
         return fireBall;
+    }
+
+    createRookProjectile(rook) {
+        let projectile = this.physics.add.sprite(rook.x, rook.y - 8, 'rookProjectile');
+        projectile.body.onWorldBounds = true; 
+        projectile.body.world.on('worldbounds', (body) => {
+            if (body.gameObject === projectile) {
+                projectile.destroy();
+            }
+        });
+        this.physics.add.collider(projectile, this.opponentPiece, (proj) => {
+            this.damageOpponent();
+            proj.destroy();
+        });
+        this.physics.add.collider(projectile, this.tiles, (proj) => {
+            proj.destroy();
+        });
+        return projectile;
     }
 }
 
