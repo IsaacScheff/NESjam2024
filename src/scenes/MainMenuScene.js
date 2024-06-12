@@ -18,13 +18,15 @@ export default class MainMenuScene extends Phaser.Scene {
         // Setup the key for starting the game
         this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.startKey.on('down', () => {
-            this.scene.start('ChessScene'); // Assuming 'ChessScene' is the correct key for your chess game scene
+            this.scene.start('OpponentSelectScene');
+            //this.scene.start('ChessScene');
         });
     }
 
     update() {
         if (this.gamepad && this.gamepad.buttons[9].pressed) {
-            this.scene.start('ChessScene');
+            this.scene.start('OpponentSelectScene');
+            //this.scene.start('ChessScene');
         }
     }
 }

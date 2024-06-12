@@ -291,7 +291,7 @@ export default class ChessScene extends Phaser.Scene {
         } else {
             this.playerTurn = true;  
         }
-    }
+    } 
 
     opponentTurn() {
         if (!this.playerTurn) {
