@@ -5,6 +5,7 @@ export default class TransitionScene extends Phaser.Scene {
 
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+        this.load.audio('gong', 'assets/sounds/gong.wav');
 
         this.load.image('b_r', 'assets/images/BlackRook.png');
         this.load.image('b_p', 'assets/images/BlackPawn.png');
@@ -30,6 +31,8 @@ export default class TransitionScene extends Phaser.Scene {
 
         const whitePieceImage = this.add.image(56, 100, whitePieceKey);
         const blackPieceImage = this.add.image(200, 100, blackPieceKey);
+
+        this.sound.play("gong");
 
         this.time.delayedCall(1000, () => {
             this.scene.start('FightScene');
