@@ -173,6 +173,12 @@ export default class ChessScene extends Phaser.Scene {
         if(!this.themeMusic.isPlaying && this.allowMusic) {
             this.themeMusic.play(this.musicConfig);
         }
+
+        if(!this.playerTurn) {
+            this.cursorSprite.setVisible(false);
+        } else {
+            this.cursorSprite.setVisible(true);
+        }
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -281,11 +287,9 @@ export default class ChessScene extends Phaser.Scene {
     endTurn() {
         if (this.playerTurn) {
             this.playerTurn = false; 
-            this.cursorSprite.setVisible(false); 
             this.opponentTurn(); 
         } else {
-            this.playerTurn = true; 
-            this.cursorSprite.setVisible(true); 
+            this.playerTurn = true;  
         }
     }
 
@@ -322,11 +326,6 @@ export default class ChessScene extends Phaser.Scene {
             this.endTurn();  // Continue to the next turn without entering the fight scene
         } else {
             this.playerTurn = !this.playerTurn; // Toggle player turn as we are not calling endTurn if we enter the fight scene
-            if(this.playerTurn){ //also have to set visibility here since endTurn isn't called
-                this.cursorSprite.setVisible(true); 
-            } else {
-                this.cursorSprite.setVisible(false); 
-            }
             this.game.registry.set('attacker', (!this.playerTurn ? 'player' : 'opponent')); //these have to be backwards as we're toggling turn above
             this.allowMusic = false;
             this.themeMusic.stop();
