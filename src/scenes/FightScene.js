@@ -42,6 +42,8 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
+        this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
+
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -128,6 +130,10 @@ export default class FightScene extends Phaser.Scene {
                 opponentSpriteKey = 'pyroRook';
                 opponentBehaviour = 'rook';
                 break;
+            case 'q':
+                opponentSpriteKey = 'pyroQueen';
+                opponentBehaviour = 'rook'; //queen has both bishop and rook abilities
+                break;
         }
 
         this.tiles = this.createTiles();
@@ -204,6 +210,15 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'pyroRook',
                 frames: this.anims.generateFrameNumbers('pyroRook', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+
+        if (!this.anims.exists('pyroQueen')) {
+            this.anims.create({
+                key: 'pyroQueen',
+                frames: this.anims.generateFrameNumbers('pyroQueen', { start: 0, end: 2 }), 
                 frameRate: 10,
                 repeat: -1 
             });
@@ -312,7 +327,7 @@ export default class FightScene extends Phaser.Scene {
             this.bishopLightBall = this.createLightBall(this.player);
         }
 
-        if (opponentSpriteKey === 'pyroBishop') {
+        if (opponentSpriteKey === 'pyroBishop' || opponentSpriteKey === 'pyroQueen') {
             this.bishopFireBall = this.createFireBall(this.opponentPiece);
         }
 
@@ -391,7 +406,7 @@ export default class FightScene extends Phaser.Scene {
             this.bishopLightBall.y = this.player.y + Math.sin(this.time.now * speed) * radius;
         }
 
-        if (this.bishopFireBall && this.opponentPiece.texture.key === 'pyroBishop') {
+        if (this.bishopFireBall && (this.opponentPiece.texture.key === 'pyroBishop' || this.opponentPiece.texture.key === 'pyroQueen')) {
             const radius = 20;  // Radius of the orbit
             const speed = 0.003;  // Speed of the orbit
             this.bishopFireBall.x = this.opponentPiece.x + Math.cos(this.time.now * speed) * radius;
