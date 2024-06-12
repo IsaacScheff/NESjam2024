@@ -621,7 +621,7 @@ export default class FightScene extends Phaser.Scene {
                         breakingSpriteKey = 'whiteRookBreak';
                         break;
                     case 'q':
-                        breakingSpriteKey = 'whiteRookBreak';
+                        breakingSpriteKey = 'whiteQueenBreak';
                         break;
                 }
 
