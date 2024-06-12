@@ -141,7 +141,7 @@ export default class FightScene extends Phaser.Scene {
         }
 
         this.tiles = this.createTiles();
-        this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
+        this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
         //TODO: add torches to a Pyromancer Arena set up function
