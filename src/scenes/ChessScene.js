@@ -40,6 +40,18 @@ export default class ChessScene extends Phaser.Scene {
         setupGamepad(this);
         this.gamepadButtons = {};
 
+        let backgroundColor = '#000000';
+        this.selectedOpponent = this.game.registry.get('selectedOpponent');
+        switch(this.selectedOpponent) {
+            case 'The Pyromancer':
+                backgroundColor = '#BCBCBC';
+                break;
+            case 'Witch of the Forrest':
+                backgroundColor = '#503000'
+                break;
+        }
+        this.cameras.main.setBackgroundColor(backgroundColor);
+
         this.themeMusic = this.sound.add('chessTheme');
 
         this.musicConfig = {
@@ -79,7 +91,7 @@ export default class ChessScene extends Phaser.Scene {
                 if ((row + col) % 2 === 0) {
                     graphics.fillStyle(0xFCE0A8, 1); //Light Squares (tan off-white)
                 } else {
-                    graphics.fillStyle(0x005800, 1); //Dark Squares (dark blue)
+                    graphics.fillStyle(0x005800, 1); //Dark Squares (dark green)
                 }
 
                 // Draw the square

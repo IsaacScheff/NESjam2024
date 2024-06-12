@@ -13,6 +13,8 @@ export default class FightScene extends Phaser.Scene {
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('stone', 'assets/images/StoneBlock1.png');
+        this.load.image('wood', 'assets/images/CabinTiles.png');
+        this.load.image('backgroundWood', 'assets/images/VerticalCabinTiles.png');
         this.load.image('w_p', 'assets/images/WhitePawn.png');
         this.load.image('w_n', 'assets/images/WhiteKnight.png');
         this.load.image('w_b', 'asses/images/WhiteBishop.png');
@@ -51,6 +53,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
         this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+        this.load.image('witchesWindow', 'assets/images/WitchesWindow.png');
     }
 
     create(data) {
@@ -63,6 +66,20 @@ export default class FightScene extends Phaser.Scene {
         const screenWidth = this.sys.game.config.width;
         const barHeight = screenHeight / 10;
         graphics.fillRect(0, 0, screenWidth, barHeight);
+
+        let backgroundColor = '#000000';
+        this.selectedOpponent = this.game.registry.get('selectedOpponent');
+        switch(this.selectedOpponent) {
+            case 'The Pyromancer':
+                backgroundColor = '#BCBCBC';
+                this.pyroCaveSetUp();
+                break;
+            case 'Witch of the Forrest':
+                backgroundColor = '#503000'
+                this.witchCabinSetUp();
+                break;
+        }
+        this.cameras.main.setBackgroundColor(backgroundColor);
 
         this.add.bitmapText(10, 5, 'pixelFont', 'PLAYER', 8);
         this.add.bitmapText(120, 5, 'pixelFont', 'OPPONENT', 8);
@@ -140,22 +157,21 @@ export default class FightScene extends Phaser.Scene {
                 break;
         }
 
-        this.tiles = this.createTiles();
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
         //TODO: add torches to a Pyromancer Arena set up function
-        if (!this.anims.exists('torches')) {
-            this.anims.create({
-                key: 'torches',
-                frames: this.anims.generateFrameNumbers('torches', { start: 0, end: 1 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-        this.add.sprite(20, 60, 'torches').play('torches');
-        this.add.sprite(128, 60, 'torches').play('torches');
-        this.add.sprite(236, 60, 'torches').play('torches');
+        // if (!this.anims.exists('torches')) {
+        //     this.anims.create({
+        //         key: 'torches',
+        //         frames: this.anims.generateFrameNumbers('torches', { start: 0, end: 1 }), 
+        //         frameRate: 10,
+        //         repeat: -1 
+        //     });
+        // }
+        // this.add.sprite(20, 60, 'torches').play('torches');
+        // this.add.sprite(128, 60, 'torches').play('torches');
+        // this.add.sprite(236, 60, 'torches').play('torches');
 
         if (!this.anims.exists('playerSwordSwing')) {
             this.anims.create({
@@ -490,13 +506,27 @@ export default class FightScene extends Phaser.Scene {
         }
     }
 
-    createTiles() {
+    createGroundTiles(tileSprite) {
         const tiles = this.physics.add.staticGroup();
         const startY = this.sys.game.config.height - (4 * 16); // 4 rows from the bottom
 
         for (let y = startY; y < this.sys.game.config.height; y += 16) {
             for (let x = 0; x < this.sys.game.config.width; x += 16) {
-                let tile = tiles.create(x, y, 'stone').setOrigin(0);
+                let tile = tiles.create(x, y, tileSprite).setOrigin(0);
+                tile.refreshBody();
+            }
+        }
+        return tiles;
+    }
+
+    createBackgroundTiles(tileSprite) {
+        const tiles = this.physics.add.staticGroup();
+        const groundHeight = 4 * 16; // Height of the ground tiles from the bottom
+        const tileHeight = 16; 
+    
+        for (let y = 32; y < this.sys.game.config.height - groundHeight; y += tileHeight) {
+            for (let x = 0; x < this.sys.game.config.width; x += tileHeight) {
+                let tile = tiles.create(x, y, tileSprite).setOrigin(0);
                 tile.refreshBody();
             }
         }
@@ -803,6 +833,29 @@ export default class FightScene extends Phaser.Scene {
                 this.player.setTexture('w_p');
             }
         }
+    }
+
+    pyroCaveSetUp() {
+        this.tiles = this.createGroundTiles('stone');
+
+        if (!this.anims.exists('torches')) {
+            this.anims.create({
+                key: 'torches',
+                frames: this.anims.generateFrameNumbers('torches', { start: 0, end: 1 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+        this.add.sprite(20, 60, 'torches').play('torches');
+        this.add.sprite(128, 60, 'torches').play('torches');
+        this.add.sprite(236, 60, 'torches').play('torches');
+    }
+
+    witchCabinSetUp() {
+        this.tiles = this.createGroundTiles('wood');
+        this.createBackgroundTiles('backgroundWood');
+        this.add.sprite(48, 58, 'witchesWindow');
+        this.add.sprite(208, 58, 'witchesWindow');
     }
 }
 
