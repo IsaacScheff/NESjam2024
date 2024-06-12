@@ -9,6 +9,9 @@ export default class BaseEnemyAI {
         this.behaviorType = options.behaviorType || 'normal';
         this.direction = 1;  // 1 for right, -1 for left
 
+        this.attackCooldown = 1000; // 1 second cooldown
+        this.lastAttackTime = 0; 
+
         this.sprite.setGravityY(300);
     }
 
@@ -39,6 +42,18 @@ export default class BaseEnemyAI {
             if (Math.random() < this.jumpChance && this.sprite.body.touching.down) {
                 this.sprite.setVelocityY(-200); 
             }
+        }
+
+        if (!this.sprite.active || !this.sprite.visible) {
+            return;
+        }
+
+        if (this.behaviorType === 'rook' && this.scene.time.now > this.lastAttackTime + this.attackCooldown) { //or queen?
+            this.lastAttackTime = this.scene.time.now;
+            let projectile = this.scene.createPyroRookProjectile(this.sprite);
+            let velocityX = this.direction * 200; // Shoot in facing direction
+            let velocityY = -50; // Slight arc
+            projectile.setVelocity(velocityX, velocityY);
         }
     }
 }

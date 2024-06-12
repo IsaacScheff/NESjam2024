@@ -24,6 +24,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
         this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
         this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
+        this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
         this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
         this.load.spritesheet('bishopFireBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
 
@@ -37,6 +38,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
+        this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -116,6 +118,10 @@ export default class FightScene extends Phaser.Scene {
             case 'b':
                 opponentSpriteKey = 'pyroBishop';
                 break;
+            case 'r':
+                opponentSpriteKey = 'pyroRook';
+                opponentBehaviour = 'rook';
+                break;
         }
 
         this.tiles = this.createTiles();
@@ -183,6 +189,15 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'pyroBishop',
                 frames: this.anims.generateFrameNumbers('pyroBishop', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+
+        if (!this.anims.exists('pyroRook')) {
+            this.anims.create({
+                key: 'pyroRook',
+                frames: this.anims.generateFrameNumbers('pyroRook', { start: 0, end: 2 }), 
                 frameRate: 10,
                 repeat: -1 
             });
@@ -644,6 +659,24 @@ export default class FightScene extends Phaser.Scene {
         });
         this.physics.add.collider(projectile, this.opponentPiece, (proj) => {
             this.damageOpponent();
+            proj.destroy();
+        });
+        this.physics.add.collider(projectile, this.tiles, (proj) => {
+            proj.destroy();
+        });
+        return projectile;
+    }
+
+    createPyroRookProjectile(rook) {
+        let projectile = this.physics.add.sprite(rook.x, rook.y - 8, 'pyroProjectile');
+        projectile.body.onWorldBounds = true;
+        projectile.body.world.on('worldbounds', (body) => {
+            if (body.gameObject === projectile) {
+                projectile.destroy();
+            }
+        });
+        this.physics.add.collider(projectile, this.player, (proj) => {
+            this.damagePlayer();
             proj.destroy();
         });
         this.physics.add.collider(projectile, this.tiles, (proj) => {
