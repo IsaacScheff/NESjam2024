@@ -46,6 +46,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
         this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
+        this.load.spritesheet('witchPawn', 'assets/images/WitchPawn.png', { frameWidth: 16, frameHeight: 20});
 
         this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
         this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
@@ -73,10 +74,12 @@ export default class FightScene extends Phaser.Scene {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
                 this.pyroCaveSetUp();
+                this.pieceVelocity = 80;
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
                 this.witchCabinSetUp();
+                this.pieceVelocity = 100;
                 break;
         }
         this.cameras.main.setBackgroundColor(backgroundColor);
@@ -135,8 +138,18 @@ export default class FightScene extends Phaser.Scene {
                 playerSpriteKey = 'w_q'
                 break;
         }
+        this.opponentPrefix = '';
+        switch(this.selectedOpponent) {
+            case 'The Pyromancer':
+                this.opponentPrefix = 'pyro';
+                break;
+            case 'Witch of the Forrest':
+                this.opponentPrefix = 'witch';
+                break;
+                
+        }
 
-        let opponentSpriteKey = 'pyroPawn'; // Default to pawn
+        let opponentSpriteKey = this.opponentPrefix + 'Pawn'; // Default to pawn
         let opponentBehaviour = 'normal'; // Default to normal pawn behavior
 
         switch(fightData.black) {
@@ -159,19 +172,6 @@ export default class FightScene extends Phaser.Scene {
 
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
-
-        //TODO: add torches to a Pyromancer Arena set up function
-        // if (!this.anims.exists('torches')) {
-        //     this.anims.create({
-        //         key: 'torches',
-        //         frames: this.anims.generateFrameNumbers('torches', { start: 0, end: 1 }), 
-        //         frameRate: 10,
-        //         repeat: -1 
-        //     });
-        // }
-        // this.add.sprite(20, 60, 'torches').play('torches');
-        // this.add.sprite(128, 60, 'torches').play('torches');
-        // this.add.sprite(236, 60, 'torches').play('torches');
 
         if (!this.anims.exists('playerSwordSwing')) {
             this.anims.create({
@@ -386,7 +386,7 @@ export default class FightScene extends Phaser.Scene {
         this.opponentAI = new BaseEnemyAI(this, this.opponentPiece, {
             minX: 16,
             maxX: this.sys.game.config.width - 16, 
-            velocity: 100,
+            velocity: this.pieceVelocity,
             jumpChance: 0.05, //ignored for knights 
             behaviorType: opponentBehaviour
         });
@@ -578,7 +578,6 @@ export default class FightScene extends Phaser.Scene {
         const fightData = this.game.registry.get('fightData');
         if (this.player.body.touching.down) {
             if (fightData.white === 'p') {
-                console.log('jumper');
                 this.player.anims.play('whitePawnJump', true).once('animationcomplete', () => {
                     this.player.setVelocityY(-160);
                     this.playerJumping = false;
@@ -856,6 +855,15 @@ export default class FightScene extends Phaser.Scene {
         this.createBackgroundTiles('backgroundWood');
         this.add.sprite(48, 58, 'witchesWindow');
         this.add.sprite(208, 58, 'witchesWindow');
+
+        if (!this.anims.exists('witchPawn')) {
+            this.anims.create({
+                key: 'witchPawn',
+                frames: this.anims.generateFrameNumbers('witchPawn', { start: 0, end: 2 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
     }
 }
 
