@@ -534,6 +534,10 @@ export default class FightScene extends Phaser.Scene {
             if(this.playerSword) {
                 this.blink(this.playerSword, () => {});
             }
+            this.bishopLightBall.body.setEnable(false) //intentionally only doing this for player and not opponent
+            if(this.bishopLightBall) {
+                this.blink(this.bishopLightBall, () => { this.bishopLightBall.body.setEnable(true)});
+            }
     
             let heart = this.playerHearts.getChildren()[this.playerHealth];
             if (heart) {
@@ -545,7 +549,7 @@ export default class FightScene extends Phaser.Scene {
                 if(this.playerSword) {
                     this.playerSword.setActive(false).setVisible(false); 
                 }
-                if(this.bishopLightBall) {
+                if(this.bishopLightBall) { 
                     this.bishopLightBall.setActive(false).setVisible(false);
                 }
 
