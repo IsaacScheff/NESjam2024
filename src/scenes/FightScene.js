@@ -37,6 +37,8 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('blackRookBreak', 'assets/images/BlackRookBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('blackQueenBreak', 'assets/images/BlackQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet('whiteQueenBreak', 'assets/images/WhiteQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
@@ -274,6 +276,24 @@ export default class FightScene extends Phaser.Scene {
             this.anims.create({
                 key: 'whiteRookBreaking',
                 frames: this.anims.generateFrameNumbers('whiteRookBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+
+        if (!this.anims.exists('blackQueenBreaking')) {
+            this.anims.create({
+                key: 'blackQueenBreaking',
+                frames: this.anims.generateFrameNumbers('blackQueenBreak', { start: 0, end: 8 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
+    
+        if (!this.anims.exists('whiteQueenBreaking')) {
+            this.anims.create({
+                key: 'whiteQueenBreaking',
+                frames: this.anims.generateFrameNumbers('whiteQueenBreak', { start: 0, end: 8 }), 
                 frameRate: 10,
                 repeat: 0 
             });
@@ -527,6 +547,9 @@ export default class FightScene extends Phaser.Scene {
                     case 'r':
                         breakingSpriteKey = 'whiteRookBreak';
                         break;
+                    case 'q':
+                        breakingSpriteKey = 'whiteRookBreak';
+                        break;
                 }
 
                 // Create the breaking animation sprite at the player's last position
@@ -580,6 +603,9 @@ export default class FightScene extends Phaser.Scene {
                         break;
                     case 'r':
                         breakingSpriteKey = 'blackRookBreaking';
+                        break;
+                    case 'q':
+                        breakingSpriteKey = 'blackQueenBreaking';
                         break;
                 }
 
