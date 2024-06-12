@@ -44,6 +44,8 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
         this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
 
+        this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
+
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
@@ -314,6 +316,15 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
+        if (!this.anims.exists('whitePawnWalking')) {
+            this.anims.create({
+                key: 'whitePawnWalking',
+                frames: this.anims.generateFrameNumbers('whitePawnWalking', { start: 0, end: 3 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+
         this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
         this.opponentPiece.setCollideWorldBounds(true);
         this.opponentPiece.play(opponentSpriteKey);
@@ -413,8 +424,9 @@ export default class FightScene extends Phaser.Scene {
             this.bishopFireBall.y = this.opponentPiece.y + Math.sin(this.time.now * speed) * radius;
         }
 
-        // Update the AI
         this.opponentAI.update();
+
+        this.updatePlayerAnimation();
     }
 
     setupControls() {
@@ -490,6 +502,9 @@ export default class FightScene extends Phaser.Scene {
             this.playerSword.flipX = true;
             this.updateSwordPosition();
         }
+        if (this.player.texture.key === 'w_p' && this.player.body.touching.down) {
+            this.player.anims.play('whitePawnWalking', true);
+        }
     }
 
     moveRight() {
@@ -498,6 +513,9 @@ export default class FightScene extends Phaser.Scene {
         if(this.playerSword) {
             this.playerSword.flipX = false;
             this.updateSwordPosition();
+        }
+        if (this.player.texture.key === 'w_p' && this.player.body.touching.down) {
+            this.player.anims.play('whitePawnWalking', true);
         }
     }
 
@@ -534,8 +552,8 @@ export default class FightScene extends Phaser.Scene {
             if(this.playerSword) {
                 this.blink(this.playerSword, () => {});
             }
-            this.bishopLightBall.body.setEnable(false) //intentionally only doing this for player and not opponent
             if(this.bishopLightBall) {
+                this.bishopLightBall.body.setEnable(false) //intentionally only doing this for player and not opponent
                 this.blink(this.bishopLightBall, () => { this.bishopLightBall.body.setEnable(true)});
             }
     
@@ -732,6 +750,20 @@ export default class FightScene extends Phaser.Scene {
             proj.destroy();
         });
         return projectile;
+    }
+
+    updatePlayerAnimation() {
+        const fightData = this.game.registry.get('fightData');
+        if (this.player.body.velocity.x !== 0 && this.player.body.touching.down) {
+            if (fightData.white === 'p') {
+                this.player.anims.play('whitePawnWalking', true);
+            }
+        } else {
+            if (fightData.white === 'p') {
+                this.player.anims.stop();
+                this.player.setTexture('w_p');
+            }
+        }
     }
 }
 
