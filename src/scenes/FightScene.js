@@ -16,6 +16,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('w_n', 'assets/images/WhiteKnight.png');
         this.load.image('w_b', 'asses/images/WhiteBishop.png');
         this.load.image('w_r', 'assets/images/WhiteRook.png');
+        this.load.image('w_q', 'assets/images/WhiteQueen.png');
         this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
         this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
         this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
@@ -104,6 +105,9 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'r':
                 playerSpriteKey = 'w_r'
+                break;
+            case 'q':
+                playerSpriteKey = 'w_q'
                 break;
         }
 
@@ -284,7 +288,7 @@ export default class FightScene extends Phaser.Scene {
 
         if(fightData.white === 'p') {
             this.playerSword = this.createSword(this.player);
-        } else if (fightData.white === 'b') {
+        } else if (fightData.white === 'b' || fightData.white === 'q') {
             this.bishopLightBall = this.createLightBall(this.player);
         }
 
@@ -360,7 +364,7 @@ export default class FightScene extends Phaser.Scene {
             this.updateSwordPosition();
         }
 
-        if (this.bishopLightBall && this.player.texture.key === 'w_b') {
+        if (this.bishopLightBall && (this.player.texture.key === 'w_b' || this.player.texture.key === 'w_q')) {
             const radius = 20;  // Radius of the orbit
             const speed = 0.003;  // Speed of the orbit
             this.bishopLightBall.x = this.player.x + Math.cos(this.time.now * speed) * radius;
@@ -477,7 +481,7 @@ export default class FightScene extends Phaser.Scene {
                     this.playerSword.body.enable = false;
                 });
             }
-            if (this.player.texture.key === 'w_r') { 
+            if (this.player.texture.key === 'w_r' || this.player.texture.key === 'w_q') { 
                 let projectile = this.createRookProjectile(this.player);
                 let velocityX = this.player.flipX ? -200 : 200; 
                 let velocityY = -50; // Initial upward force to create an arc
