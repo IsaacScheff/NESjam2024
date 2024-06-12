@@ -7,6 +7,7 @@ export default class FightScene extends Phaser.Scene {
 
         this.lastAttackTime = 0;  
         this.attackCooldown = 1000; // Cooldown time 1 second
+        this.playerJumping = false;
     }
 
     preload() {
@@ -45,6 +46,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
 
         this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
+        this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
 
 
         this.load.image('heart', 'assets/images/Heart.png');
@@ -325,6 +327,15 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
+        if (!this.anims.exists('whitePawnJump')) {
+            this.anims.create({
+                key: 'whitePawnJump',
+                frames: this.anims.generateFrameNumbers('whitePawnJump', { start: 0, end: 3 }), 
+                frameRate: 30,
+                repeat: 0 
+            });
+        }
+
         this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
         this.opponentPiece.setCollideWorldBounds(true);
         this.opponentPiece.play(opponentSpriteKey);
@@ -520,8 +531,20 @@ export default class FightScene extends Phaser.Scene {
     }
 
     jump() {
+        this.playerJumping = true;
+        const fightData = this.game.registry.get('fightData');
         if (this.player.body.touching.down) {
-            this.player.setVelocityY(-160);
+            if (fightData.white === 'p') {
+                console.log('jumper');
+                this.player.anims.play('whitePawnJump', true).once('animationcomplete', () => {
+                    this.player.setVelocityY(-160);
+                    this.playerJumping = false;
+
+                });
+            } else {
+                this.player.setVelocityY(-160);
+                this.playerJumping = false;
+            }
         }
     }
 
@@ -754,6 +777,9 @@ export default class FightScene extends Phaser.Scene {
 
     updatePlayerAnimation() {
         const fightData = this.game.registry.get('fightData');
+        if(this.playerJumping === true) {
+            return;
+        }
         if (this.player.body.velocity.x !== 0 && this.player.body.touching.down) {
             if (fightData.white === 'p') {
                 this.player.anims.play('whitePawnWalking', true);
