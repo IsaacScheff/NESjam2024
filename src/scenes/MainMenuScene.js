@@ -1,3 +1,4 @@
+import CRTEffect from "../CRTeffect";
 import { setupGamepad } from "../GamepadHandler";
 
 export default class MainMenuScene extends Phaser.Scene {
@@ -7,10 +8,12 @@ export default class MainMenuScene extends Phaser.Scene {
 
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+        this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
     }
 
     create() {
         setupGamepad(this);
+        CRTEffect(this);
         // Display the placeholder text
         this.add.bitmapText(this.scale.width / 2, this.scale.height / 2 - 20, 'pixelFont', 'Placeholder', 8).setOrigin(0.5);
         this.add.bitmapText(this.scale.width / 2, this.scale.height / 2 + 10, 'pixelFont', 'Press Start', 8).setOrigin(0.5);

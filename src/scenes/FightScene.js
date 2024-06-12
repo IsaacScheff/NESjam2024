@@ -1,4 +1,5 @@
 import BaseEnemyAI from "../ai/BaseEnemyAI";
+import CRTEffect from '../CRTeffect.js';
 import { setupGamepad } from "../GamepadHandler";
 
 export default class FightScene extends Phaser.Scene {
@@ -12,6 +13,7 @@ export default class FightScene extends Phaser.Scene {
 
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+        this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
         this.load.image('stone', 'assets/images/StoneBlock1.png');
         this.load.image('wood', 'assets/images/CabinTiles.png');
         this.load.image('backgroundWood', 'assets/images/VerticalCabinTiles.png');
@@ -60,8 +62,8 @@ export default class FightScene extends Phaser.Scene {
     create(data) {
         setupGamepad(this);
         this.gamepadButtons = {};
-        
-        this.cameras.main.setBackgroundColor('#BCBCBC');
+        CRTEffect(this);
+
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
         const screenHeight = this.sys.game.config.height;
         const screenWidth = this.sys.game.config.width;

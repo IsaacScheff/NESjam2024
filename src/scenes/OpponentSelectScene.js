@@ -1,3 +1,4 @@
+import CRTEffect from "../CRTeffect";
 import { setupGamepad } from "../GamepadHandler";
 export default class OpponentSelectScene extends Phaser.Scene {
     constructor() {
@@ -6,11 +7,13 @@ export default class OpponentSelectScene extends Phaser.Scene {
 
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+        this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
     }
 
     create() {
         setupGamepad(this);
         this.gamepadButtons = {};
+        CRTEffect(this);
 
         this.add.bitmapText(70, 40, 'pixelFont', 'SELECT OPPONENT', 8);
 

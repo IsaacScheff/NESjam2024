@@ -1,4 +1,5 @@
 import { Chess } from 'chess.js' 
+import CRTEffect from '../CRTeffect.js';
 import { makeRandomMove } from '../ai/randomMoveAI.js';
 import { setupGamepad } from '../GamepadHandler.js';
 
@@ -34,11 +35,14 @@ export default class ChessScene extends Phaser.Scene {
         this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
         this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
         this.load.audio('chessTheme', 'assets/sounds/ChessTheme.wav');
+
+        this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
     }
 
     create() {
         setupGamepad(this);
         this.gamepadButtons = {};
+        CRTEffect(this);
 
         let backgroundColor = '#000000';
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
@@ -131,7 +135,6 @@ export default class ChessScene extends Phaser.Scene {
 
         this.input.keyboard.on('keydown-J', this.handleSelection, this);
         this.input.keyboard.on('keydown-H', this.unselectPiece, this);
-
     }
    
     placePieces() {

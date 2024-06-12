@@ -1,3 +1,4 @@
+import CRTEffect from '../CRTeffect.js';
 export default class TransitionScene extends Phaser.Scene {
     constructor() {
         super({ key: 'TransitionScene' });
@@ -5,6 +6,7 @@ export default class TransitionScene extends Phaser.Scene {
 
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
+        this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
         this.load.audio('gong', 'assets/sounds/gong.wav');
 
         this.load.image('b_r', 'assets/images/BlackRook.png');
@@ -23,6 +25,7 @@ export default class TransitionScene extends Phaser.Scene {
     }
 
     create() { 
+        CRTEffect(this);
         const fightData = this.game.registry.get('fightData');
         const whitePieceKey = `w_${fightData.white}`;
         const blackPieceKey = `b_${fightData.black}`;
