@@ -48,9 +48,9 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
         this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
 
-
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
+        this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
     }
 
     create(data) {
@@ -143,6 +143,19 @@ export default class FightScene extends Phaser.Scene {
         this.tiles = this.createTiles();
         this.player = this.physics.add.sprite(100, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
+
+        //TODO: add torches to a Pyromancer Arena set up function
+        if (!this.anims.exists('torches')) {
+            this.anims.create({
+                key: 'torches',
+                frames: this.anims.generateFrameNumbers('torches', { start: 0, end: 1 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+        this.add.sprite(20, 60, 'torches').play('torches');
+        this.add.sprite(128, 60, 'torches').play('torches');
+        this.add.sprite(236, 60, 'torches').play('torches');
 
         if (!this.anims.exists('playerSwordSwing')) {
             this.anims.create({
