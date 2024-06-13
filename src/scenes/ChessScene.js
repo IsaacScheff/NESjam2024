@@ -1,6 +1,7 @@
 import { Chess } from 'chess.js' 
 import CRTEffect from '../CRTeffect.js';
 import { makeRandomMove } from '../ai/randomMoveAI.js';
+import { makeSimpleMove } from '../ai/simpleCaptureAI.js';
 import { setupGamepad } from '../GamepadHandler.js';
 
 export default class ChessScene extends Phaser.Scene {
@@ -49,9 +50,23 @@ export default class ChessScene extends Phaser.Scene {
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
+                this.opponentMove = makeRandomMove;
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
+                this.opponentMove = makeSimpleMove;
+                break;
+            case 'Mr. Necromancer':
+                backgroundColor = '#BCBCBC';
+                this.opponentMove = makeSimpleMove;
+                break;
+            case 'Royal Magician':
+                backgroundColor = '#503000'
+                this.opponentMove = makeSimpleMove;
+                break;
+            case 'Magnus the Magus':
+                backgroundColor = '#BCBCBC';
+                this.opponentMove = makeSimpleMove;
                 break;
         }
         this.cameras.main.setBackgroundColor(backgroundColor);
@@ -311,7 +326,7 @@ export default class ChessScene extends Phaser.Scene {
     opponentTurn() {
         if (!this.playerTurn) {
             this.time.delayedCall(1500, () => {
-                const move = makeRandomMove(this.chess); 
+                const move = this.opponentMove(this.chess); 
                 if (move) {
                     this.sound.play("placePiece");
                     this.placePieces();

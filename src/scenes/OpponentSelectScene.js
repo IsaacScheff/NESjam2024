@@ -19,7 +19,10 @@ export default class OpponentSelectScene extends Phaser.Scene {
 
         this.opponents = [
             this.add.bitmapText(40, 80, 'pixelFont', 'The Pyromancer', 8),
-            this.add.bitmapText(40, 110, 'pixelFont', 'Witch of the Forrest', 8)
+            this.add.bitmapText(40, 105, 'pixelFont', 'Witch of the Forrest', 8),
+            this.add.bitmapText(40, 130, 'pixelFont', 'Mr. Necromancer', 8),
+            this.add.bitmapText(40, 155, 'pixelFont', 'Royal Magician', 8),
+            this.add.bitmapText(40, 180, 'pixelFont', 'Magnus the Magus', 8)
         ]
 
         this.selector = this.add.bitmapText(30, 80, 'pixelFont', '>', 8);

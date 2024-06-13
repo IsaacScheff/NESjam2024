@@ -65,6 +65,18 @@ export default class FightScene extends Phaser.Scene {
                 this.load.image('backgroundWood', 'assets/images/VerticalCabinTiles.png');
                 this.load.image('witchesWindow', 'assets/images/WitchesWindow.png');
                 break;
+            case 'Mr. Necromancer':
+                this.load.image('stone', 'assets/images/StoneBlock1.png');
+                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                break;
+            case 'Royal Magician':
+                this.load.image('stone', 'assets/images/StoneBlock1.png');
+                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                break;
+            case 'Magnus the Magus':
+                this.load.image('stone', 'assets/images/StoneBlock1.png');
+                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                break;
         }
     }
 
@@ -80,16 +92,34 @@ export default class FightScene extends Phaser.Scene {
         graphics.fillRect(0, 0, screenWidth, barHeight);
 
         let backgroundColor = '#000000';
+        this.opponentSuffix = '';
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
                 this.pyroCaveSetUp();
                 this.pieceVelocity = 80;
+                this.opponentSuffix = 'pyro';
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
                 this.witchCabinSetUp();
                 this.pieceVelocity = 100;
+                this.opponentSuffix = 'witch';
+                break;
+            case 'Mr. Necromancer':
+                this.pyroCaveSetUp();
+                this.pieceVelocity = 120;
+                this.opponentSuffix = 'necro';
+                break;
+            case 'Royal Magician':
+                this.pyroCaveSetUp();
+                this.pieceVelocity = 130;
+                this.opponentSuffix = 'royal';
+                break;
+            case 'Magnus the Magus':
+                this.pyroCaveSetUp();
+                this.pieceVelocity = 140;
+                this.opponentSuffix = 'magnus';
                 break;
         }
         this.cameras.main.setBackgroundColor(backgroundColor);
@@ -147,18 +177,7 @@ export default class FightScene extends Phaser.Scene {
             case 'q':
                 playerSpriteKey = 'w_q'
                 break;
-        }
-
-        this.opponentSuffix = '';
-        switch(this.selectedOpponent) {
-            case 'The Pyromancer':
-                this.opponentSuffix = 'pyro';
-                break;
-            case 'Witch of the Forrest':
-                this.opponentSuffix = 'witch';
-                break;
-                
-        }
+        } 
 
         this.opponentSpriteKey = 'pyroPawn-' + this.opponentSuffix; // Default to pawn
         let opponentBehaviour = 'normal'; // Default to normal pawn behavior
