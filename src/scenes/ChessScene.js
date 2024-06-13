@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js' 
 import CRTEffect from '../CRTeffect.js';
+import { makeMinimaxMove } from '../ai/minimaxAI.js';
 import { makeRandomMove } from '../ai/randomMoveAI.js';
 import { makeSimpleMove } from '../ai/simpleCaptureAI.js';
 import { setupGamepad } from '../GamepadHandler.js';
@@ -58,15 +59,15 @@ export default class ChessScene extends Phaser.Scene {
                 break;
             case 'Mr. Necromancer':
                 backgroundColor = '#BCBCBC';
-                this.opponentMove = makeSimpleMove;
+                this.opponentMove = makeMinimaxMove;
                 break;
             case 'Royal Magician':
                 backgroundColor = '#503000'
-                this.opponentMove = makeSimpleMove;
+                this.opponentMove = makeMinimaxMove;
                 break;
             case 'Magnus the Magus':
                 backgroundColor = '#BCBCBC';
-                this.opponentMove = makeSimpleMove;
+                this.opponentMove = makeMinimaxMove;
                 break;
         }
         this.cameras.main.setBackgroundColor(backgroundColor);
