@@ -66,8 +66,10 @@ export default class FightScene extends Phaser.Scene {
                 this.load.image('witchesWindow', 'assets/images/WitchesWindow.png');
                 break;
             case 'Mr. Necromancer':
-                this.load.image('stone', 'assets/images/StoneBlock1.png');
-                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                this.load.spritesheet('zombiePawn', 'assets/images/ZombiePawn.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('zombiePawnBreak', 'assets/images/ZombiePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.image('dirt', 'assets/images/Dirt.png');
+                this.load.image('star', 'assets/images/Star.png');
                 break;
             case 'Royal Magician':
                 this.load.image('stone', 'assets/images/StoneBlock1.png');
@@ -107,16 +109,19 @@ export default class FightScene extends Phaser.Scene {
                 this.opponentSuffix = 'witch';
                 break;
             case 'Mr. Necromancer':
-                this.pyroCaveSetUp();
-                this.pieceVelocity = 120;
+                backgroundColor = '#4428BC';
+                this.necroSetUp();
+                this.pieceVelocity = 100;
                 this.opponentSuffix = 'necro';
                 break;
             case 'Royal Magician':
+                backgroundColor = '#BCBCBC'
                 this.pyroCaveSetUp();
                 this.pieceVelocity = 130;
                 this.opponentSuffix = 'royal';
                 break;
             case 'Magnus the Magus':
+                backgroundColor = '#A4E4FC';
                 this.pyroCaveSetUp();
                 this.pieceVelocity = 140;
                 this.opponentSuffix = 'magnus';
@@ -904,6 +909,89 @@ export default class FightScene extends Phaser.Scene {
         this.createBackgroundTiles('backgroundWood');
         this.add.sprite(48, 58, 'witchesWindow');
         this.add.sprite(208, 58, 'witchesWindow');
+    }
+
+    necroSetUp() {
+        this.tiles = this.createGroundTiles('dirt');
+        this.stars = this.createStarSky('star');
+        this.spawnZombieInterval = 3000; //(3 seconds)
+        this.anims.create({
+            key: 'zombieWalk',
+            frames: this.anims.generateFrameNumbers('zombiePawn', { start: 0, end: 3 }), 
+            frameRate: 10,
+            repeat: -1 
+        });
+        this.anims.create({
+            key: 'zombieBreak',
+            frames: this.anims.generateFrameNumbers('zombiePawnBreak', { start: 0, end: 5 }), 
+            frameRate: 10,
+            repeat: 0 
+        });
+        this.zombies = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite
+        });
+        this.time.addEvent({
+            delay: this.spawnZombieInterval,
+            callback: this.spawnZombiePawn,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    royalSetUp() {
+
+    }
+
+    magnusSetUp() {
+
+    }
+    createStarSky(tileSprite) {
+        const tiles = this.physics.add.staticGroup();
+        const groundHeight = 4 * 16; // Height of the ground tiles from the bottom
+        const tileHeight = 16; // want to space them out
+    
+        const screenHeight = this.sys.game.config.height;
+        const topLimit = screenHeight / 10; //player health data takes up this space
+        const bottomLimit = 155; 
+    
+        for (let y = topLimit; y < bottomLimit; y += tileHeight) {
+            for (let x = 0; x < this.sys.game.config.width; x += tileHeight) {
+                if (Math.random() > 0.5) { 
+                    let tile = tiles.create(x + Math.random() * tileHeight, y + Math.random() * tileHeight, tileSprite).setOrigin(0);
+                    tile.refreshBody();
+                }
+            }
+        }
+        return tiles;
+    }
+    spawnZombiePawn() {
+        const zombieY = this.sys.game.config.height - (4 * 16) - 32; 
+        const zombie = this.zombies.create(0, zombieY, 'zombiePawn');
+        zombie.setVelocityX(50); // Move right
+        zombie.setCollideWorldBounds(false);
+        zombie.play('zombieWalk'); 
+    
+        this.physics.add.collider(zombie, this.player, (zombie, player) => {
+            this.damagePlayer(zombie, player);
+            this.playZombieBreakAnimation(zombie.x, zombie.y);
+            zombie.destroy();
+        }, null, this);
+    
+        this.physics.add.collider(zombie, this.tiles); // Collide with ground tiles
+    
+        // Destroy zombie when it goes out of the game world bounds on the right
+        zombie.setInteractive().on('pointerout', () => {
+            if (zombie.x > this.sys.game.config.width) {
+                zombie.destroy();
+            }
+        });
+    } 
+    playZombieBreakAnimation(x, y) {
+        const breakAnimation = this.add.sprite(x, y, 'zombiePawnBreak');
+        breakAnimation.play('zombieBreak');
+        breakAnimation.on('animationcomplete', () => {
+            breakAnimation.destroy(); 
+        });
     }
 }
 

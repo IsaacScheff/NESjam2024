@@ -60,15 +60,15 @@ export default class ChessScene extends Phaser.Scene {
                 this.opponentMove = makeSimpleMove;
                 break;
             case 'Mr. Necromancer':
-                backgroundColor = '#BCBCBC';
+                backgroundColor = '#4428BC';
                 this.opponentMove = makeMinimaxMove;
                 break;
             case 'Royal Magician':
-                backgroundColor = '#503000'
+                backgroundColor = '#BCBCBC'
                 this.opponentMove = makeAlphaBetaMove;
                 break;
             case 'Magnus the Magus':
-                backgroundColor = '#BCBCBC';
+                backgroundColor = '#A4E4FC';
                 this.opponentMove = makeMagnusMove;
                 break;
         }

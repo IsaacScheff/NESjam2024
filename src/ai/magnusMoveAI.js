@@ -1,6 +1,6 @@
 export function makeMagnusMove(game) {
     var isMaximisingPlayer = true;
-    var depth = 4;
+    var depth = 3;
     var newGameMoves = game.moves({ verbose: true });
     var bestMove = -9999;
     var bestMoveFound;
