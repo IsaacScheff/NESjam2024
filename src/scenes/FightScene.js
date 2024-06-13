@@ -1,4 +1,5 @@
 import BaseEnemyAI from "../ai/BaseEnemyAI";
+import createPalettes from "../CreatePalettes.js";
 import CRTEffect from '../CRTeffect.js';
 import { setupGamepad } from "../GamepadHandler";
 
@@ -12,19 +13,15 @@ export default class FightScene extends Phaser.Scene {
     }
 
     preload() {
+        this.selectedOpponent = this.game.registry.get('selectedOpponent');
+
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
-        this.load.image('stone', 'assets/images/StoneBlock1.png');
-        this.load.image('wood', 'assets/images/CabinTiles.png');
-        this.load.image('backgroundWood', 'assets/images/VerticalCabinTiles.png');
         this.load.image('w_p', 'assets/images/WhitePawn.png');
         this.load.image('w_n', 'assets/images/WhiteKnight.png');
-        this.load.image('w_b', 'asses/images/WhiteBishop.png');
+        this.load.image('w_b', 'assets/images/WhiteBishop.png');
         this.load.image('w_r', 'assets/images/WhiteRook.png');
-        this.load.image('w_q', 'assets/images/WhiteQueen.png');
-        this.load.image('pyroPawn1', 'assets/images/FirePawn1.png');
-        this.load.image('pyroPawn2', 'assets/images/FirePawn2.png'); 
-        this.load.image('pyroPawn3', 'assets/images/FirePawn3.png');  
+        this.load.image('w_q', 'assets/images/WhiteQueen.png'); 
 
         this.load.image('sword', 'assets/images/PawnSwordBase.png');
         this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
@@ -32,7 +29,7 @@ export default class FightScene extends Phaser.Scene {
         this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
         this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
         this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
-        this.load.spritesheet('bishopFireBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
+        this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
 
         this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
@@ -44,22 +41,34 @@ export default class FightScene extends Phaser.Scene {
         this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('blackQueenBreak', 'assets/images/BlackQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('whiteQueenBreak', 'assets/images/WhiteQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
-        this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
-        this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
-        this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
-        this.load.spritesheet('witchPawn', 'assets/images/WitchPawn.png', { frameWidth: 16, frameHeight: 20});
 
         this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
         this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
-        this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
-        this.load.image('witchesWindow', 'assets/images/WitchesWindow.png');
+
+        this.load.image('oppPalette', 'assets/images/OpponentPalette.png');
+        this.load.spritesheet('pyroPawn', 'assets/images/PyroPawn.png',  { frameWidth: 16, frameHeight: 20 });
+        this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
+        this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
+        this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
+        this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
+
+        switch(this.selectedOpponent) {
+            case 'The Pyromancer':
+                this.load.image('stone', 'assets/images/StoneBlock1.png');
+                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                break;
+            case 'Witch of the Forrest':
+                this.load.image('wood', 'assets/images/CabinTiles.png');
+                this.load.image('backgroundWood', 'assets/images/VerticalCabinTiles.png');
+                this.load.image('witchesWindow', 'assets/images/WitchesWindow.png');
+                break;
+        }
     }
 
-    create(data) {
+    create() {
         setupGamepad(this);
         this.gamepadButtons = {};
         CRTEffect(this);
@@ -71,7 +80,6 @@ export default class FightScene extends Phaser.Scene {
         graphics.fillRect(0, 0, screenWidth, barHeight);
 
         let backgroundColor = '#000000';
-        this.selectedOpponent = this.game.registry.get('selectedOpponent');
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
@@ -140,34 +148,103 @@ export default class FightScene extends Phaser.Scene {
                 playerSpriteKey = 'w_q'
                 break;
         }
-        this.opponentPrefix = '';
+
+        this.opponentSuffix = '';
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
-                this.opponentPrefix = 'pyro';
+                this.opponentSuffix = 'pyro';
                 break;
             case 'Witch of the Forrest':
-                this.opponentPrefix = 'witch';
+                this.opponentSuffix = 'witch';
                 break;
                 
         }
 
-        let opponentSpriteKey = this.opponentPrefix + 'Pawn'; // Default to pawn
+        this.opponentSpriteKey = 'pyroPawn-' + this.opponentSuffix; // Default to pawn
         let opponentBehaviour = 'normal'; // Default to normal pawn behavior
 
         switch(fightData.black) {
+            case 'p':
+                let pawnConfig = {
+                    paletteKey: 'oppPalette',
+                    paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                    spriteSheet: {
+                        key: 'pyroPawn',
+                        frameWidth: 16,
+                        frameHeight: 20
+                    },
+                    animations: [
+                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                    ]
+                };
+                createPalettes(pawnConfig, this.game);
+                this.opponentSpriteKey = 'pyroPawn-' + this.opponentSuffix;
+                break;
             case 'n':
-                opponentSpriteKey = 'pyroKnight';
+                let knightConfig = {
+                    paletteKey: 'oppPalette',
+                    paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                    spriteSheet: {
+                        key: 'pyroKnight',
+                        frameWidth: 19,
+                        frameHeight: 18
+                    },
+                    animations: [
+                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                    ]
+                };
+                createPalettes(knightConfig, this.game);
+                this.opponentSpriteKey = 'pyroKnight-' + this.opponentSuffix;
                 opponentBehaviour = 'knight';
                 break;
             case 'b':
-                opponentSpriteKey = 'pyroBishop';
+                let bishopConfig = {
+                    paletteKey: 'oppPalette',
+                    paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                    spriteSheet: {
+                        key: 'pyroBishop',
+                        frameWidth: 16,
+                        frameHeight: 18
+                    },
+                    animations: [
+                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                    ]
+                };
+                createPalettes(bishopConfig, this.game);
+                this.opponentSpriteKey = 'pyroBishop-' + this.opponentSuffix;
                 break;
             case 'r':
-                opponentSpriteKey = 'pyroRook';
+                let rookConfig = {
+                    paletteKey: 'oppPalette',
+                    paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                    spriteSheet: {
+                        key: 'pyroRook',
+                        frameWidth: 18,
+                        frameHeight: 20
+                    },
+                    animations: [
+                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                    ]
+                };
+                createPalettes(rookConfig, this.game);
+                this.opponentSpriteKey = 'pyroRook-' + this.opponentSuffix;
                 opponentBehaviour = 'rook';
                 break;
             case 'q':
-                opponentSpriteKey = 'pyroQueen';
+                let queenConfig = {
+                    paletteKey: 'oppPalette',
+                    paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                    spriteSheet: {
+                        key: 'pyroQueen',
+                        frameWidth: 20,
+                        frameHeight: 18
+                    },
+                    animations: [
+                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                    ]
+                };
+                createPalettes(queenConfig, this.game);
+                this.opponentSpriteKey = 'pyroQueen-' + this.opponentSuffix;
                 opponentBehaviour = 'rook'; //queen has both bishop and rook abilities
                 break;
         }
@@ -201,59 +278,10 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        if(!this.anims.exists('bishopFireBall')) {
+        if(!this.anims.exists('pyroBishopBall')) {
             this.anims.create({
-                key: 'bishopFireBall',
-                frames: this.anims.generateFrameNumbers('bishopFireBall', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('pyroPawn')) {
-            this.anims.create({
-                key: 'pyroPawn',
-                frames: [
-                    { key: 'pyroPawn1' },
-                    { key: 'pyroPawn2' },
-                    { key: 'pyroPawn3' }
-                ],
-                frameRate: 10,
-                repeat: -1
-            });
-        }
-
-        if (!this.anims.exists('pyroKnight')) {
-            this.anims.create({
-                key: 'pyroKnight',
-                frames: this.anims.generateFrameNumbers('pyroKnight', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('pyroBishop')) {
-            this.anims.create({
-                key: 'pyroBishop',
-                frames: this.anims.generateFrameNumbers('pyroBishop', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('pyroRook')) {
-            this.anims.create({
-                key: 'pyroRook',
-                frames: this.anims.generateFrameNumbers('pyroRook', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('pyroQueen')) {
-            this.anims.create({
-                key: 'pyroQueen',
-                frames: this.anims.generateFrameNumbers('pyroQueen', { start: 0, end: 2 }), 
+                key: 'pyroBishopBall',
+                frames: this.anims.generateFrameNumbers('pyroBishopBall', { start: 0, end: 2 }), 
                 frameRate: 10,
                 repeat: -1 
             });
@@ -367,9 +395,9 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        this.opponentPiece = this.physics.add.sprite(200, 100, opponentSpriteKey); 
+        this.opponentPiece = this.physics.add.sprite(200, 100, this.opponentSpriteKey); 
         this.opponentPiece.setCollideWorldBounds(true);
-        this.opponentPiece.play(opponentSpriteKey);
+        this.opponentPiece.play(this.opponentSpriteKey + '-sizzle');
         this.opponentPiece.body.setSize(this.opponentPiece.width, this.opponentPiece.height);
         this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
         this.physics.add.collider(this.opponentPiece, this.tiles);
@@ -380,7 +408,7 @@ export default class FightScene extends Phaser.Scene {
             this.bishopLightBall = this.createLightBall(this.player);
         }
 
-        if (opponentSpriteKey === 'pyroBishop' || opponentSpriteKey === 'pyroQueen') {
+        if (this.opponentSpriteKey === 'pyroBishop-' + this.opponentSuffix || this.opponentSpriteKey === 'pyroQueen-' + this.opponentSuffix) {
             this.bishopFireBall = this.createFireBall(this.opponentPiece);
         }
 
@@ -459,7 +487,7 @@ export default class FightScene extends Phaser.Scene {
             this.bishopLightBall.y = this.player.y + Math.sin(this.time.now * speed) * radius;
         }
 
-        if (this.bishopFireBall && (this.opponentPiece.texture.key === 'pyroBishop' || this.opponentPiece.texture.key === 'pyroQueen')) {
+        if (this.bishopFireBall && (this.opponentSpriteKey === 'pyroBishop-' + this.opponentSuffix || this.opponentSpriteKey === 'pyroQueen-' + this.opponentSuffix)) {
             const radius = 20;  // Radius of the orbit
             const speed = 0.003;  // Speed of the orbit
             this.bishopFireBall.x = this.opponentPiece.x + Math.cos(this.time.now * speed) * radius;
@@ -772,9 +800,9 @@ export default class FightScene extends Phaser.Scene {
         return lightBall;
     }
 
-    createFireBall(pyroPawn) {
-        const fireBall = this.physics.add.sprite(pyroPawn.x, pyroPawn.y, 'bishopFireBall');
-        fireBall.play('bishopFireBall');
+    createFireBall(oppPiece) { 
+        const fireBall = this.physics.add.sprite(oppPiece.x, oppPiece.y, 'pyroBishopBall');
+        fireBall.play('pyroBishopBall');
         fireBall.setCircle(6);  
         fireBall.body.setAllowGravity(false);  
 
@@ -857,15 +885,6 @@ export default class FightScene extends Phaser.Scene {
         this.createBackgroundTiles('backgroundWood');
         this.add.sprite(48, 58, 'witchesWindow');
         this.add.sprite(208, 58, 'witchesWindow');
-
-        if (!this.anims.exists('witchPawn')) {
-            this.anims.create({
-                key: 'witchPawn',
-                frames: this.anims.generateFrameNumbers('witchPawn', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
     }
 }
 
