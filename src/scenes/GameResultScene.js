@@ -1,5 +1,4 @@
 import CRTEffect from '../CRTeffect.js';
-import { setupGamepad } from "../GamepadHandler";
 export default class GameResultScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameResultScene' });
@@ -11,8 +10,6 @@ export default class GameResultScene extends Phaser.Scene {
     }
 
     create() { 
-        setupGamepad(this);
-        this.gamepadButtons = {};
         CRTEffect(this);
 
         this.result = this.game.registry.get('result');
@@ -63,24 +60,18 @@ export default class GameResultScene extends Phaser.Scene {
                 this.resultsText = this.drawText;
         }       
         this.add.bitmapText(112, 100, 'pixelFont', this.resultsText, 8);
-        this.add.bitmapText(80, 200, 'pixelFont', 'PRESS START', 8);
 
-        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    }
-
-    update() {
-        if (Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
-            this.returnToSelect();
-        }
-
-        if (this.gamepad) {
-            if (this.gamepad.buttons[9].pressed) {
-                this.returnToSelect();
-            }
-        }
+        this.returnToSelect();
     }
 
     returnToSelect() {
-        this.scene.start('OpponentSelectScene');
+        const keys = Object.keys(this.game.registry.values);
+            keys.forEach(key => {
+                this.game.registry.remove(key);
+            });
+            
+        this.time.delayedCall(5000, () => {
+            this.scene.start('OpponentSelectScene');
+        });
     }
 }

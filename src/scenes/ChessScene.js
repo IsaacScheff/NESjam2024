@@ -550,13 +550,15 @@ export default class ChessScene extends Phaser.Scene {
         } else if (this.chess.isCheck()) {
             this.gameText = "Check!"
             console.log("Check");
+        } else {
+            this.gameText = '';
         }
         if(gameOver) {
             this.time.delayedCall(4000, () => {
-            this.allowMusic = false;
-            this.game.registry.set('lastMusicTime', 0);
-            this.themeMusic.stop();
-            this.scene.start('GameResultScene'); 
+                this.allowMusic = false;
+                this.game.registry.set('lastMusicTime', 0);
+                this.themeMusic.stop();
+                this.scene.start('GameResultScene'); 
             });
         }
     }

@@ -120,6 +120,15 @@ export default class FightScene extends Phaser.Scene {
         this.gamepadButtons = {};
         CRTEffect(this);
 
+        this.musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            loop: true,
+            delay: 0
+        };
+
         const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
         const screenHeight = this.sys.game.config.height;
         const screenWidth = this.sys.game.config.width;
@@ -425,7 +434,7 @@ export default class FightScene extends Phaser.Scene {
                 break;
         }
         this.battleMusic = this.sound.add(this.musicKey);
-        this.battleMusic.play();
+        this.battleMusic.play(this.musicConfig);
 
 
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
