@@ -11,7 +11,7 @@ export default class GameResultScene extends Phaser.Scene {
 
     create() { 
         CRTEffect(this);
-
+        this.resultsText = 'result text';
         this.add.bitmapText(112, 100, 'pixelFont', this.resultsText, 8);
 
     }

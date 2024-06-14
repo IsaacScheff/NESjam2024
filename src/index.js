@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import ChessScene from './scenes/ChessScene';
 import FightScene from './scenes/FightScene';
+import GameResultScene from './scenes/GameResultScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import OpponentIntroScene from './scenes/OpponentIntroScene';
 import OpponentSelectScene from './scenes/OpponentSelectScene';
@@ -24,7 +25,7 @@ const config = {
     input: {
         gamepad: true
     },
-    scene: [MainMenuScene, OpponentIntroScene, OpponentSelectScene, ChessScene, FightScene, TransitionScene]
+    scene: [MainMenuScene, OpponentIntroScene, OpponentSelectScene, ChessScene, FightScene, TransitionScene, GameResultScene]
 };
 
 new Phaser.Game(config);

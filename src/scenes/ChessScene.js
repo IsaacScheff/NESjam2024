@@ -521,14 +521,29 @@ export default class ChessScene extends Phaser.Scene {
         return nearest;
     }
     checkGameStatus() {
+        let gameOver = false;
         if (this.chess.isCheckmate()) {
-            console.log("Checkmate");
+            const winner = this.chess.turn() === 'w' ? 'Opponent' : 'Player';
+            this.game.registry.set('result', `${winner} wins by checkmate`);
+            console.log(`${winner} wins by checkmate`);
+            gameOver = true;
         } else if (this.chess.isStalemate()) {
+            his.game.registry.set('result', 'draw');
             console.log("Stalemate");
+            gameOver = true;
         } else if (this.chess.isDraw()) {
+            this.game.registry.set('result', 'draw');
+            gameOver = true;
             console.log("Draw");
         } else if (this.chess.isCheck()) {
+            //set game text to "Check!"
             console.log("Check");
+        }
+        if(gameOver) {
+            this.allowMusic = false;
+            this.game.registry.set('lastMusicTime', 0);
+            this.themeMusic.stop();
+            this.scene.start('GameResultScene'); 
         }
     }
 }
