@@ -663,12 +663,12 @@ export default class FightScene extends Phaser.Scene {
         if (this.player.body.touching.down) {
             if (fightData.white === 'p') {
                 this.player.anims.play('whitePawnJump', true).once('animationcomplete', () => {
-                    this.player.setVelocityY(-160);
+                    this.player.setVelocityY(-180);
                     this.playerJumping = false;
 
                 });
             } else {
-                this.player.setVelocityY(-160);
+                this.player.setVelocityY(-180);
                 this.playerJumping = false;
             }
         }
@@ -712,6 +712,7 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.playerHealth === 0) {
+                this.opponentInvulnerable = true;
                 this.player.setActive(false).setVisible(false); // Hide the player
                 if(this.playerSword) {
                     this.playerSword.setActive(false).setVisible(false); 
@@ -775,6 +776,7 @@ export default class FightScene extends Phaser.Scene {
             }
     
             if (this.opponentHealth === 0) {
+                this.playerInvulnerable = true;
                 if(this.bishopFireBall) {
                     this.bishopFireBall.setActive(false).setVisible(false);
                 }

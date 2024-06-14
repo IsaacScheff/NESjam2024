@@ -36,7 +36,7 @@ export default class ChessScene extends Phaser.Scene {
         this.load.image('cursorInner', 'assets/images/CursorInner.png');
         this.load.image('cursorSelected', 'assets/images/CursorSelection.png');
 
-        this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
+        this.load.audio('placePiece', 'assets/sounds/placePiece.mp3');
         this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
         this.load.audio('chessTheme', 'assets/sounds/ChessTheme.mp3');
 
