@@ -74,6 +74,7 @@ export default class ChessScene extends Phaser.Scene {
         }
         this.cameras.main.setBackgroundColor(backgroundColor);
 
+        this.themeMusicTimeStamps = [0, 6.4, 12.8, 19.2, 25.6, 32,  38.4, 44.8, 51.2, 57.6, 60.4]
         this.themeMusic = this.sound.add('chessTheme');
 
         this.musicConfig = {
@@ -81,16 +82,26 @@ export default class ChessScene extends Phaser.Scene {
             volume: 1,
             rate: 1,
             detune: 0,
-            //seek: 25.75,  // Start playback at 25.75 seconds in 
             loop: true,
             delay: 0
         };
 
         this.themeMusic.play(this.musicConfig);
+        // this.events.on('wake', () => {
+        //     this.allowMusic = true;  // Reset flag when scene is awakened
+        //     if (!this.themeMusic.isPlaying) {
+        //         this.themeMusic.play(this.musicConfig);
+        //     }
+        // });
         this.events.on('wake', () => {
             this.allowMusic = true;  // Reset flag when scene is awakened
+            let lastTime = this.game.registry.get('lastMusicTime');
+            let startTime = this.getNearestTimestamp(lastTime);
             if (!this.themeMusic.isPlaying) {
-                this.themeMusic.play(this.musicConfig);
+                this.themeMusic.play({
+                    ...this.musicConfig,
+                    seek: startTime
+                });
             }
         });
 
@@ -361,6 +372,7 @@ export default class ChessScene extends Phaser.Scene {
             this.playerTurn = !this.playerTurn; // Toggle player turn as we are not calling endTurn if we enter the fight scene
             this.game.registry.set('attacker', (!this.playerTurn ? 'player' : 'opponent')); //these have to be backwards as we're toggling turn above
             this.allowMusic = false;
+            this.game.registry.set('lastMusicTime', this.themeMusic.seek);
             this.themeMusic.stop();
             this.scene.switch('TransitionScene');
         }
@@ -504,5 +516,10 @@ export default class ChessScene extends Phaser.Scene {
             this.selectedPiece = null;
         }
     }
-      
+    getNearestTimestamp(currentTime) {
+        let nearest = this.themeMusicTimeStamps.reduce((prev, curr) => {
+            return (Math.abs(curr - currentTime) < Math.abs(prev - currentTime) ? curr : prev);
+        });
+        return nearest;
+    }
 }
