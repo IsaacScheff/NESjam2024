@@ -103,7 +103,7 @@ export default class ChessScene extends Phaser.Scene {
         this.events.on('wake', this.checkTurn, this);
 
         // Graphics object to draw squares
-        const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+        const boardGraphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
 
         this.squareSize = 24;
         this.offSetX = 32;
@@ -116,13 +116,13 @@ export default class ChessScene extends Phaser.Scene {
 
                 // Alternate colors
                 if ((row + col) % 2 === 0) {
-                    graphics.fillStyle(0xFCE0A8, 1); //Light Squares (tan off-white)
+                    boardGraphics.fillStyle(0xFCE0A8, 1); //Light Squares (tan off-white)
                 } else {
-                    graphics.fillStyle(0x005800, 1); //Dark Squares (dark green)
+                    boardGraphics.fillStyle(0x005800, 1); //Dark Squares (dark green)
                 }
 
                 // Draw the square
-                graphics.fillRect(x, y, this.squareSize, this.squareSize);
+                boardGraphics.fillRect(x, y, this.squareSize, this.squareSize);
             }
         }
         
@@ -158,6 +158,13 @@ export default class ChessScene extends Phaser.Scene {
 
         this.input.keyboard.on('keydown-J', this.handleSelection, this);
         this.input.keyboard.on('keydown-H', this.unselectPiece, this);
+
+        const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+        const screenHeight = this.sys.game.config.height;
+        const screenWidth = this.sys.game.config.width;
+        const barHeight = screenHeight / 11;
+        graphics.fillRect(0, 0, screenWidth, barHeight);
+        this.gameText = '';
     }
    
     placePieces() {
@@ -217,6 +224,8 @@ export default class ChessScene extends Phaser.Scene {
         } else {
             this.cursorSprite.setVisible(true);
         }
+
+        this.add.bitmapText(112, 8, 'pixelFont', this.gameText, 8);
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -523,27 +532,32 @@ export default class ChessScene extends Phaser.Scene {
     checkGameStatus() {
         let gameOver = false;
         if (this.chess.isCheckmate()) {
-            const winner = this.chess.turn() === 'w' ? 'Opponent' : 'Player';
-            this.game.registry.set('result', `${winner} wins by checkmate`);
+            const winner = this.chess.turn() === 'w' ? 'opponent' : 'player';
+            this.game.registry.set('result', `${winner}`);
+            this.gameText = 'Checkmate!';
             console.log(`${winner} wins by checkmate`);
             gameOver = true;
         } else if (this.chess.isStalemate()) {
-            his.game.registry.set('result', 'draw');
+            this.game.registry.set('result', 'draw');
+            this.gameText = "Stalemate!"
             console.log("Stalemate");
             gameOver = true;
         } else if (this.chess.isDraw()) {
             this.game.registry.set('result', 'draw');
+            this.gameText = "Draw!";
             gameOver = true;
             console.log("Draw");
         } else if (this.chess.isCheck()) {
-            //set game text to "Check!"
+            this.gameText = "Check!"
             console.log("Check");
         }
         if(gameOver) {
+            this.time.delayedCall(4000, () => {
             this.allowMusic = false;
             this.game.registry.set('lastMusicTime', 0);
             this.themeMusic.stop();
             this.scene.start('GameResultScene'); 
+            });
         }
     }
 }

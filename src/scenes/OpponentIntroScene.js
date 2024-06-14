@@ -42,6 +42,8 @@ export default class OpponentIntroScene extends Phaser.Scene {
         
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
+        //TODO: set background color
+        //TODO: set black graphic for words
         this.add.bitmapText(40, 140, 'pixelFont', this.challengeText, 8);
         this.add.bitmapText(80, 200, 'pixelFont', 'PRESS START', 8);
 
