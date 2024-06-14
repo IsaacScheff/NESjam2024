@@ -2,6 +2,7 @@ export function makeMinimaxMove(game) {
     var depth = 3;
     var isMaximisingPlayer = true;
     var newGameMoves = game.moves({ verbose: true });
+    if(newGameMoves.length === 0) return null;
     var bestMove = -9999;
     var bestMoveFound;
 

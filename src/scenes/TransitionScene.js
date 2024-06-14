@@ -30,7 +30,7 @@ export default class TransitionScene extends Phaser.Scene {
         const whitePieceKey = `w_${fightData.white}`;
         const blackPieceKey = `b_${fightData.black}`;
 
-        this.add.bitmapText(112, 100, 'pixelFont', 'FIGHT!', 8);
+        this.add.bitmapText(112, 100, 'pixelFont', 'BATTLE!', 8);
 
         const whitePieceImage = this.add.image(56, 100, whitePieceKey);
         const blackPieceImage = this.add.image(200, 100, blackPieceKey);

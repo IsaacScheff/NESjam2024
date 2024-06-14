@@ -144,7 +144,7 @@ export default class FightScene extends Phaser.Scene {
             case 'Mr. Necromancer':
                 backgroundColor = '#4428BC';
                 this.necroSetUp();
-                this.pieceVelocity = 100;
+                this.pieceVelocity = 85;
                 this.opponentSuffix = 'necro';
                 break;
             case 'Royal Magician':

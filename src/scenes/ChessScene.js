@@ -351,7 +351,7 @@ export default class ChessScene extends Phaser.Scene {
                     }
                 } else {
                     console.log('AI has no moves available');
-                    // Handle game over or checkmate
+                    this.checkGameStatus();
                 }
             }, [], this);
         }

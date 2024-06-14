@@ -1,6 +1,7 @@
 export function makeSimpleMove(game) {
 
     var newGameMoves = game.moves({ verbose: true });
+    if(newGameMoves.length === 0) return null;
     var bestMove = null;
     //use any negative large number
     var bestValue = -9999;
