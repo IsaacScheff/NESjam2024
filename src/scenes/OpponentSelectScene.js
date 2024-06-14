@@ -45,11 +45,11 @@ export default class OpponentSelectScene extends Phaser.Scene {
         }
 
         if (this.gamepad) {
-            if (this.gamepad.buttons[12].pressed) this.moveSelection(-1);
-            if (this.gamepad.buttons[13].pressed) this.moveSelection(1);
-            if (this.gamepad.buttons[0].pressed || this.gamepad.buttons[9].pressed) {
-                this.confirmSelection();
-            }
+            this.handleGamepadInput(12, 'up');
+            this.handleGamepadInput(13, 'down');
+
+            this.handleGamepadInput(0, 'A');
+            this.handleGamepadInput(9, 'Start');
         }
     }
 
@@ -66,5 +66,30 @@ export default class OpponentSelectScene extends Phaser.Scene {
         this.game.registry.set('selectedOpponent', selectedOpponent);
         this.scene.start('OpponentIntroScene');
         //this.scene.start('ChessScene'); 
+    }
+
+    handleGamepadInput(buttonIndex, action) {
+        const isDown = this.gamepad.buttons[buttonIndex].pressed;
+        const wasDown = this.gamepadButtons[buttonIndex];
+    
+        if (isDown && !wasDown) {
+            switch (action) {
+                case 'up':
+                    this.moveSelection(-1);
+                    break;
+                case 'down':
+                    this.moveSelection(1);
+                    break;
+                case 'A':
+                    this.confirmSelection();
+                    break;
+                case 'Start':
+                    this.confirmSelection();
+                    break;
+            }
+        }
+    
+        // Update the stored state for the next frame
+        this.gamepadButtons[buttonIndex] = isDown;
     }
 }
