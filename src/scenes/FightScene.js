@@ -14,46 +14,79 @@ export default class FightScene extends Phaser.Scene {
 
     preload() {
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
+        const fightData = this.game.registry.get('fightData');
+
+        switch(fightData.white) {
+            case 'p':
+                this.load.image('w_p', 'assets/images/WhitePawn.png');
+                this.load.image('sword', 'assets/images/PawnSwordBase.png');
+                this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
+                this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
+                this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
+                this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
+                break;
+            case 'n':
+                this.load.image('w_n', 'assets/images/WhiteKnight.png');
+                this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+                break;
+            case 'b':
+                this.load.image('w_b', 'assets/images/WhiteBishop.png');
+                this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
+                break;
+            case 'r':
+                this.load.image('w_r', 'assets/images/WhiteRook.png');
+                this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
+                break;
+            case 'q':
+                this.load.image('w_q', 'assets/images/WhiteQueen.png'); 
+                this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
+                this.load.spritesheet('whiteQueenBreak', 'assets/images/WhiteQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
+                break;
+        }
+        
+        switch(fightData.black) {
+            case 'p':
+                this.load.spritesheet('pyroPawn', 'assets/images/PyroPawn.png',  { frameWidth: 16, frameHeight: 20 });
+                this.load.audio('pawnMusic', 'assets/sounds/pawnbattle.mp3');
+                this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
+                break;
+            case 'n':
+                this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
+                this.load.spritesheet('blackKnightBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.audio('knightMusic', 'assets/sounds/knightbattle.mp3');
+                break;
+            case 'b':
+                this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
+                this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
+                this.load.audio('bishopMusic', 'assets/sounds/bishopbattle.mp3');
+                break;
+            case 'r':
+                this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
+                this.load.spritesheet('blackRookBreak', 'assets/images/BlackRookBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.audio('rookMusic', 'assets/sounds/rookbattle.mp3');
+                this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
+                break;
+            case 'q':
+                this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
+                this.load.audio('queenMusic', 'assets/sounds/queenbattle.mp3');
+                this.load.spritesheet('blackQueenBreak', 'assets/images/BlackQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
+                this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
+                break;
+        } 
 
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
-        this.load.image('w_p', 'assets/images/WhitePawn.png');
-        this.load.image('w_n', 'assets/images/WhiteKnight.png');
-        this.load.image('w_b', 'assets/images/WhiteBishop.png');
-        this.load.image('w_r', 'assets/images/WhiteRook.png');
-        this.load.image('w_q', 'assets/images/WhiteQueen.png'); 
-
-        this.load.image('sword', 'assets/images/PawnSwordBase.png');
-        this.load.image('swordSmear', 'assets/images/PawnSwordSmear.png');
-        this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
-        this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
-        this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
-        this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
-        this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
-
-        this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('blackKnightBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('blackRookBreak', 'assets/images/BlackRookBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('blackQueenBreak', 'assets/images/BlackQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.spritesheet('whiteQueenBreak', 'assets/images/WhiteQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
-
-        this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
-        this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
 
         this.load.image('oppPalette', 'assets/images/OpponentPalette.png');
-        this.load.spritesheet('pyroPawn', 'assets/images/PyroPawn.png',  { frameWidth: 16, frameHeight: 20 });
-        this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
-        this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
-        this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
-        this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
 
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
@@ -169,18 +202,92 @@ export default class FightScene extends Phaser.Scene {
         let playerSpriteKey = 'w_p'; // default to pawn
         let isKnight = false;  // Flag to indicate if the player is a knight
         switch(fightData.white) {
+            case 'p':
+                if (!this.anims.exists('playerSwordSwing')) {
+                    this.anims.create({
+                        key: 'playerSwordSwing',
+                        frames: [
+                            { key: 'sword' },
+                            { key: 'swordSmear' },
+                            { key: 'swordThrust' },
+                            { key: 'swordThrust' },
+                            { key: 'swordThrust' },
+                            { key: 'swordSmear' },
+                            { key: 'sword' }
+                        ],
+                        frameRate: 20,
+                        repeat: 0
+                    });
+                }
+                if (!this.anims.exists('whitePawnJump')) {
+                    this.anims.create({
+                        key: 'whitePawnJump',
+                        frames: this.anims.generateFrameNumbers('whitePawnJump', { start: 0, end: 3 }), 
+                        frameRate: 30,
+                        repeat: 0 
+                    });
+                }
+                if (!this.anims.exists('whitePawnWalking')) {
+                    this.anims.create({
+                        key: 'whitePawnWalking',
+                        frames: this.anims.generateFrameNumbers('whitePawnWalking', { start: 0, end: 3 }), 
+                        frameRate: 10,
+                        repeat: -1 
+                    });
+                }
+                if (!this.anims.exists('whitePawnBreaking')) {
+                    this.anims.create({
+                        key: 'whitePawnBreaking',
+                        frames: this.anims.generateFrameNumbers('whitePawnBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
+                break;
             case 'n':
-                playerSpriteKey = 'w_n';  
+                playerSpriteKey = 'w_n'; 
+                if (!this.anims.exists('whiteKnightBreaking')) {
+                    this.anims.create({
+                        key: 'whiteKnightBreaking',
+                        frames: this.anims.generateFrameNumbers('whiteKnightBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                } 
                 isKnight = true;
                 break;
             case 'b':
                 playerSpriteKey = 'w_b'
+                if (!this.anims.exists('whiteBishopBreaking')) {
+                    this.anims.create({
+                        key: 'whiteBishopBreaking',
+                        frames: this.anims.generateFrameNumbers('whiteBishopBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'r':
                 playerSpriteKey = 'w_r'
+                if (!this.anims.exists('whiteRookBreaking')) {
+                    this.anims.create({
+                        key: 'whiteRookBreaking',
+                        frames: this.anims.generateFrameNumbers('whiteRookBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'q':
                 playerSpriteKey = 'w_q'
+                if (!this.anims.exists('whiteQueenBreaking')) {
+                    this.anims.create({
+                        key: 'whiteQueenBreaking',
+                        frames: this.anims.generateFrameNumbers('whiteQueenBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
         } 
 
@@ -203,6 +310,15 @@ export default class FightScene extends Phaser.Scene {
                 };
                 createPalettes(pawnConfig, this.game);
                 this.opponentSpriteKey = 'pyroPawn-' + this.opponentSuffix;
+                this.musicKey = 'pawnMusic';
+                if (!this.anims.exists('blackPawnBreaking')) {
+                    this.anims.create({
+                        key: 'blackPawnBreaking',
+                        frames: this.anims.generateFrameNumbers('blackPawnBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'n':
                 let knightConfig = {
@@ -220,6 +336,15 @@ export default class FightScene extends Phaser.Scene {
                 createPalettes(knightConfig, this.game);
                 this.opponentSpriteKey = 'pyroKnight-' + this.opponentSuffix;
                 opponentBehaviour = 'knight';
+                this.musicKey = 'knightMusic';
+                if (!this.anims.exists('blackKnightBreaking')) {
+                    this.anims.create({
+                        key: 'blackKnightBreaking',
+                        frames: this.anims.generateFrameNumbers('blackKnightBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'b':
                 let bishopConfig = {
@@ -236,6 +361,15 @@ export default class FightScene extends Phaser.Scene {
                 };
                 createPalettes(bishopConfig, this.game);
                 this.opponentSpriteKey = 'pyroBishop-' + this.opponentSuffix;
+                this.musicKey = 'bishopMusic';
+                if (!this.anims.exists('blackBishopBreaking')) {
+                    this.anims.create({
+                        key: 'blackBishopBreaking',
+                        frames: this.anims.generateFrameNumbers('blackBishopBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'r':
                 let rookConfig = {
@@ -253,6 +387,15 @@ export default class FightScene extends Phaser.Scene {
                 createPalettes(rookConfig, this.game);
                 this.opponentSpriteKey = 'pyroRook-' + this.opponentSuffix;
                 opponentBehaviour = 'rook';
+                this.musicKey = 'rookMusic';
+                if (!this.anims.exists('blackRookBreaking')) {
+                    this.anims.create({
+                        key: 'blackRookBreaking',
+                        frames: this.anims.generateFrameNumbers('blackRookBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
             case 'q':
                 let queenConfig = {
@@ -270,30 +413,25 @@ export default class FightScene extends Phaser.Scene {
                 createPalettes(queenConfig, this.game);
                 this.opponentSpriteKey = 'pyroQueen-' + this.opponentSuffix;
                 opponentBehaviour = 'rook'; //queen has both bishop and rook abilities
+                this.musicKey = 'queenMusic';
+                if (!this.anims.exists('blackQueenBreaking')) {
+                    this.anims.create({
+                        key: 'blackQueenBreaking',
+                        frames: this.anims.generateFrameNumbers('blackQueenBreak', { start: 0, end: 8 }), 
+                        frameRate: 10,
+                        repeat: 0 
+                    });
+                }
                 break;
         }
+        this.battleMusic = this.sound.add(this.musicKey);
+        this.battleMusic.play();
+
 
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
-        if (!this.anims.exists('playerSwordSwing')) {
-            this.anims.create({
-                key: 'playerSwordSwing',
-                frames: [
-                    { key: 'sword' },
-                    { key: 'swordSmear' },
-                    { key: 'swordThrust' },
-                    { key: 'swordThrust' },
-                    { key: 'swordThrust' },
-                    { key: 'swordSmear' },
-                    { key: 'sword' }
-                ],
-                frameRate: 20,
-                repeat: 0
-            });
-        }
-
-        if(!this.anims.exists('bishopLightBall')) {
+        if((fightData.white === 'b' || fightData.white === 'q') && !this.anims.exists('bishopLightBall')) {
             this.anims.create({
                 key: 'bishopLightBall',
                 frames: this.anims.generateFrameNumbers('bishopLightBall', { start: 0, end: 2 }), 
@@ -302,120 +440,12 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        if(!this.anims.exists('pyroBishopBall')) {
+        if((fightData.black === 'b' || fightData.black === 'q') && !this.anims.exists('pyroBishopBall')) {
             this.anims.create({
                 key: 'pyroBishopBall',
                 frames: this.anims.generateFrameNumbers('pyroBishopBall', { start: 0, end: 2 }), 
                 frameRate: 10,
                 repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('blackPawnBreaking')) {
-            this.anims.create({
-                key: 'blackPawnBreaking',
-                frames: this.anims.generateFrameNumbers('blackPawnBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-    
-        if (!this.anims.exists('whitePawnBreaking')) {
-            this.anims.create({
-                key: 'whitePawnBreaking',
-                frames: this.anims.generateFrameNumbers('whitePawnBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-
-        if (!this.anims.exists('blackKnightBreaking')) {
-            this.anims.create({
-                key: 'blackKnightBreaking',
-                frames: this.anims.generateFrameNumbers('blackKnightBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-    
-        if (!this.anims.exists('whiteKnightBreaking')) {
-            this.anims.create({
-                key: 'whiteKnightBreaking',
-                frames: this.anims.generateFrameNumbers('whiteKnightBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-
-        if (!this.anims.exists('blackBishopBreaking')) {
-            this.anims.create({
-                key: 'blackBishopBreaking',
-                frames: this.anims.generateFrameNumbers('blackBishopBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-    
-        if (!this.anims.exists('whiteBishopBreaking')) {
-            this.anims.create({
-                key: 'whiteBishopBreaking',
-                frames: this.anims.generateFrameNumbers('whiteBishopBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-
-        if (!this.anims.exists('blackRookBreaking')) {
-            this.anims.create({
-                key: 'blackRookBreaking',
-                frames: this.anims.generateFrameNumbers('blackRookBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-    
-        if (!this.anims.exists('whiteRookBreaking')) {
-            this.anims.create({
-                key: 'whiteRookBreaking',
-                frames: this.anims.generateFrameNumbers('whiteRookBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-
-        if (!this.anims.exists('blackQueenBreaking')) {
-            this.anims.create({
-                key: 'blackQueenBreaking',
-                frames: this.anims.generateFrameNumbers('blackQueenBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-    
-        if (!this.anims.exists('whiteQueenBreaking')) {
-            this.anims.create({
-                key: 'whiteQueenBreaking',
-                frames: this.anims.generateFrameNumbers('whiteQueenBreak', { start: 0, end: 8 }), 
-                frameRate: 10,
-                repeat: 0 
-            });
-        }
-
-        if (!this.anims.exists('whitePawnWalking')) {
-            this.anims.create({
-                key: 'whitePawnWalking',
-                frames: this.anims.generateFrameNumbers('whitePawnWalking', { start: 0, end: 3 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
-        }
-
-        if (!this.anims.exists('whitePawnJump')) {
-            this.anims.create({
-                key: 'whitePawnJump',
-                frames: this.anims.generateFrameNumbers('whitePawnJump', { start: 0, end: 3 }), 
-                frameRate: 30,
-                repeat: 0 
             });
         }
 
@@ -726,7 +756,7 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-
+                    this.battleMusic.stop();
                     this.scene.switch('ChessScene');
                 });
             }
@@ -788,7 +818,7 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-
+                    this.battleMusic.stop();
                     this.scene.switch('ChessScene');
                 });
 
@@ -915,18 +945,22 @@ export default class FightScene extends Phaser.Scene {
         this.tiles = this.createGroundTiles('dirt');
         this.stars = this.createStarSky('star');
         this.spawnZombieInterval = 3000; //(3 seconds)
-        this.anims.create({
-            key: 'zombieWalk',
-            frames: this.anims.generateFrameNumbers('zombiePawn', { start: 0, end: 3 }), 
-            frameRate: 10,
-            repeat: -1 
-        });
-        this.anims.create({
-            key: 'zombieBreak',
-            frames: this.anims.generateFrameNumbers('zombiePawnBreak', { start: 0, end: 5 }), 
-            frameRate: 10,
-            repeat: 0 
-        });
+        if (!this.anims.exists('zombieWalk')) {
+            this.anims.create({
+                key: 'zombieWalk',
+                frames: this.anims.generateFrameNumbers('zombiePawn', { start: 0, end: 3 }), 
+                frameRate: 10,
+                repeat: -1 
+            });
+        }
+        if (!this.anims.exists('zombieBreak')) {
+            this.anims.create({
+                key: 'zombieBreak',
+                frames: this.anims.generateFrameNumbers('zombiePawnBreak', { start: 0, end: 5 }), 
+                frameRate: 10,
+                repeat: 0 
+            });
+        }
         this.zombies = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite
         });
@@ -985,7 +1019,7 @@ export default class FightScene extends Phaser.Scene {
                 zombie.destroy();
             }
         });
-    } 
+    }
     playZombieBreakAnimation(x, y) {
         const breakAnimation = this.add.sprite(x, y, 'zombiePawnBreak');
         breakAnimation.play('zombieBreak');

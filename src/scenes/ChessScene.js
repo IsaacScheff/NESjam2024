@@ -38,7 +38,7 @@ export default class ChessScene extends Phaser.Scene {
 
         this.load.audio('placePiece', 'assets/sounds/placePiece.wav');
         this.load.audio('illegalMove', 'assets/sounds/illegalMove.wav');
-        this.load.audio('chessTheme', 'assets/sounds/ChessTheme.wav');
+        this.load.audio('chessTheme', 'assets/sounds/ChessTheme.mp3');
 
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
     }
@@ -81,7 +81,7 @@ export default class ChessScene extends Phaser.Scene {
             volume: 1,
             rate: 1,
             detune: 0,
-            seek: 25.75,  // Start playback at 25.75 seconds in 
+            //seek: 25.75,  // Start playback at 25.75 seconds in 
             loop: true,
             delay: 0
         };
