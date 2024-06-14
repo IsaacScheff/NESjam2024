@@ -87,12 +87,6 @@ export default class ChessScene extends Phaser.Scene {
         };
 
         this.themeMusic.play(this.musicConfig);
-        // this.events.on('wake', () => {
-        //     this.allowMusic = true;  // Reset flag when scene is awakened
-        //     if (!this.themeMusic.isPlaying) {
-        //         this.themeMusic.play(this.musicConfig);
-        //     }
-        // });
         this.events.on('wake', () => {
             this.allowMusic = true;  // Reset flag when scene is awakened
             let lastTime = this.game.registry.get('lastMusicTime');
@@ -329,6 +323,7 @@ export default class ChessScene extends Phaser.Scene {
     }
 
     endTurn() {
+        this.checkGameStatus(); 
         if (this.playerTurn) {
             this.playerTurn = false; 
             this.opponentTurn(); 
@@ -391,8 +386,11 @@ export default class ChessScene extends Phaser.Scene {
         //console.log("Winner from fight: ", winner);
         if (winner === 'defender') {
             this.handleDefenderWin(winner);
-        } else if (!this.playerTurn) {
-            this.opponentTurn();  // If it's the AI's turn, continue with opponent's move
+        } else { 
+            this.checkGameStatus(); 
+            if (!this.playerTurn) {
+                this.opponentTurn();  // If it's the AI's turn, continue with opponent's move
+            }
         }
     }
 
@@ -521,5 +519,16 @@ export default class ChessScene extends Phaser.Scene {
             return (Math.abs(curr - currentTime) < Math.abs(prev - currentTime) ? curr : prev);
         });
         return nearest;
+    }
+    checkGameStatus() {
+        if (this.chess.isCheckmate()) {
+            console.log("Checkmate");
+        } else if (this.chess.isStalemate()) {
+            console.log("Stalemate");
+        } else if (this.chess.isDraw()) {
+            console.log("Draw");
+        } else if (this.chess.isCheck()) {
+            console.log("Check");
+        }
     }
 }
