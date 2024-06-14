@@ -64,6 +64,7 @@ export default class OpponentSelectScene extends Phaser.Scene {
     confirmSelection() {
         const selectedOpponent = this.opponents[this.selectedIndex].text;
         this.game.registry.set('selectedOpponent', selectedOpponent);
-        this.scene.start('ChessScene'); //TODO: create intro scenes before match starts
+        this.scene.start('OpponentIntroScene');
+        //this.scene.start('ChessScene'); 
     }
 }

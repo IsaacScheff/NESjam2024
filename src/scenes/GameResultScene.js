@@ -1,7 +1,7 @@
 import CRTEffect from '../CRTeffect.js';
-export default class TransitionScene extends Phaser.Scene {
+export default class GameResultScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'TransitionScene' });
+        super({ key: 'GameResultScene' });
     }
 
     preload() {
@@ -12,10 +12,11 @@ export default class TransitionScene extends Phaser.Scene {
     create() { 
         CRTEffect(this);
 
-        this.add.bitmapText(112, 100, 'pixelFont', , 8);
+        this.add.bitmapText(112, 100, 'pixelFont', this.resultsText, 8);
 
-        // this.time.delayedCall(1000, () => {
-        //     this.scene.start('OpponentSelectScene');
-        // });
+    }
+
+    returnToSelect() {
+        this.scene.start('OpponentSelectScene');
     }
 }

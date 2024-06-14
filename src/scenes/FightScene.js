@@ -694,6 +694,7 @@ export default class FightScene extends Phaser.Scene {
     }
 
     damagePlayer() {
+        if (this.opponentHealth <= 0) return;
         if (this.playerHealth > 0 && !this.playerInvulnerable) {
             this.playerHealth--;
             this.playerInvulnerable = true;
@@ -765,6 +766,7 @@ export default class FightScene extends Phaser.Scene {
     }
 
     damageOpponent() {
+        if (this.playerHealth <= 0) return;
         if (this.opponentHealth > 0 && !this.opponentInvulnerable) {
             this.opponentHealth--;
             this.opponentInvulnerable = true;
