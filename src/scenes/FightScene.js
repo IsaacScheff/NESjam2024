@@ -449,13 +449,33 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        if((fightData.black === 'b' || fightData.black === 'q') && !this.anims.exists('pyroBishopBall')) {
-            this.anims.create({
-                key: 'pyroBishopBall',
-                frames: this.anims.generateFrameNumbers('pyroBishopBall', { start: 0, end: 2 }), 
-                frameRate: 10,
-                repeat: -1 
-            });
+        if((fightData.black === 'b' || fightData.black === 'q')) {
+            let pyroBishopBallConfig = {
+                paletteKey: 'oppPalette',
+                paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                spriteSheet: {
+                    key: 'pyroBishopBall',
+                    frameWidth: 6,
+                    frameHeight: 6
+                },
+                animations: [
+                    { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2 }
+                ]
+            };
+            createPalettes(pyroBishopBallConfig, this.game);
+        }
+        if((fightData.black === 'r' || fightData.black === 'q')) {
+            let pyroProjectileConfig = {
+                paletteKey: 'oppPalette',
+                paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
+                spriteSheet: {
+                    key: 'pyroProjectile',
+                    frameWidth: 5,
+                    frameHeight: 5
+                },
+                animations: []
+            };
+            createPalettes(pyroProjectileConfig, this.game);
         }
 
         this.opponentPiece = this.physics.add.sprite(200, 100, this.opponentSpriteKey); 
@@ -868,8 +888,8 @@ export default class FightScene extends Phaser.Scene {
     }
 
     createFireBall(oppPiece) { 
-        const fireBall = this.physics.add.sprite(oppPiece.x, oppPiece.y, 'pyroBishopBall');
-        fireBall.play('pyroBishopBall');
+        const fireBall = this.physics.add.sprite(oppPiece.x, oppPiece.y, 'pyroBishopBall-' + this.opponentSuffix);
+        fireBall.play('pyroBishopBall-' + this.opponentSuffix + '-sizzle');
         fireBall.setCircle(6);  
         fireBall.body.setAllowGravity(false);  
 
@@ -897,7 +917,7 @@ export default class FightScene extends Phaser.Scene {
     }
 
     createPyroRookProjectile(rook) {
-        let projectile = this.physics.add.sprite(rook.x, rook.y - 8, 'pyroProjectile');
+        let projectile = this.physics.add.sprite(rook.x, rook.y - 8, 'pyroProjectile-' + this.opponentSuffix);
         projectile.body.onWorldBounds = true;
         projectile.body.world.on('worldbounds', (body) => {
             if (body.gameObject === projectile) {

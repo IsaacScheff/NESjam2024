@@ -27,7 +27,6 @@ export default function createPalettes(config, game) {
 
     game.textures.remove(config.spriteSheet.key + '-temp');
     game.textures.remove(config.spriteSheet.key);
-    game.textures.remove(config.paletteKey);
 }
 
 function extractColorLookup(game, config, paletteWidth) {
@@ -71,6 +70,7 @@ function replacePixels(pixelArray, paletteWidth, baseColors, newColors) {
         for (let c = 0; c < paletteWidth; c++) {
             let oldColor = baseColors[c];
             let newColor = newColors[c];
+            if (!oldColor || !newColor) continue; // Skip if colors are invalid
             if (r === oldColor.r && g === oldColor.g && b === oldColor.b) {
                 [pixelArray[p], pixelArray[p+1], pixelArray[p+2]] = [newColor.r, newColor.g, newColor.b];
                 break; // Added a break to improve efficiency once a match is found
