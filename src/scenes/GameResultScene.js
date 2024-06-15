@@ -27,28 +27,39 @@ export default class GameResultScene extends Phaser.Scene {
                 this.add.image(128, 80, 'pyroPortrait');
                 this.oppWinText = "Hah! Maybe \nyou're new too.";
                 this.playerWinText = 'Yargh, I got \nburned this time.';
+                this.backgroundColor = '#BCBCBC';
                 break;
             case 'Witch of the Forrest':
                 this.add.image(128, 80, 'witchPortrait');
                 this.oppWinText = "Alright! A win \nfor this witch!";
                 this.playerWinText = 'Ah well, you \nyou win this time.';
+                this.sbackgroundColor = '#503000'
                 break;
             case 'Mr. Necromancer':
                 this.add.image(128, 80, 'necroPortrait');
                 this.oppWinText = "Zombie pawns, \nthey never fail.";
                 this.playerWinText = 'My zombie pawns, \nthey failed.';
+                this.backgroundColor = '#4428BC';
                 break;
             case 'Royal Magician':
                 this.add.image(128, 80, 'royalPortrait');
                 this.oppWinText = "You put up a \nvalient effort.";
                 this.playerWinText = 'Aw man, you \nbeat me in front \nof the king.';
+                this.backgroundColor = '#BCBCBC'
                 break;
             case 'Magnus the Magus':
                 this.add.image(128, 80, 'magnusPortrait');
-                this.oppWinText = "Better luck \nnext time.";
+                this.oppWinText = "Better luck next time.";
                 this.playerWinText = "At least it's \nnot Monopoly. ";
+                this.sbackgroundColor = '#A4E4FC';
                 break;
         }
+        this.cameras.main.setBackgroundColor(this.backgroundColor);
+        const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+        const screenHeight = this.sys.game.config.height;
+        const screenWidth = this.sys.game.config.width;
+        const barHeight = screenHeight / 2;
+        graphics.fillRect(0, 120, screenWidth, barHeight);
 
         switch(this.result) {
             case 'player':
