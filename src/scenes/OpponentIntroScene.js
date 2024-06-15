@@ -22,7 +22,7 @@ export default class OpponentIntroScene extends Phaser.Scene {
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
-                this.add.image(120, 100, 'pyroPortrait');
+                this.add.image(128, 80, 'pyroPortrait');
                 this.challengeText = "Welcome to my cave, \nConjurer. To be \nhonest I'm still new \nto chess."
                 break;
             case 'Witch of the Forrest':
@@ -42,6 +42,12 @@ export default class OpponentIntroScene extends Phaser.Scene {
                 backgroundColor = '#A4E4FC';
                 break;
         }
+        this.cameras.main.setBackgroundColor(backgroundColor);
+        const graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+        const screenHeight = this.sys.game.config.height;
+        const screenWidth = this.sys.game.config.width;
+        const barHeight = screenHeight / 2;
+        graphics.fillRect(0, 120, screenWidth, barHeight);
         
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 

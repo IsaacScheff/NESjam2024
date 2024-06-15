@@ -561,7 +561,7 @@ export default class ChessScene extends Phaser.Scene {
             this.gameText = '';
         }
         if(gameOver) {
-            this.time.delayedCall(4000, () => {
+            this.time.delayedCall(3500, () => {
                 this.playerTurn = !this.playerTurn;
                 this.allowMusic = false;
                 this.game.registry.set('lastMusicTime', 0);
