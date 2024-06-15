@@ -12,6 +12,8 @@ export default class OpponentIntroScene extends Phaser.Scene {
         this.load.image('pyroPortrait', 'assets/images/PyroPortrait.png');
         this.load.image('witchPortrait', 'assets/images/WitchPortrait.png');
         this.load.image('necroPortrait', 'assets/images/NecroPortrait.png');
+        this.load.image('royalPortrait', 'assets/images/RoyalPortrait.png');
+        this.load.image('magnusPortrait', 'assets/images/MagnusPortrait.png');
     }
 
     create() { 
@@ -38,10 +40,12 @@ export default class OpponentIntroScene extends Phaser.Scene {
                 this.challengeText = "Beware the march of my\nzombie pawns, Conjurer."
                 break;
             case 'Royal Magician':
+                this.add.image(128, 80, 'royalPortrait');
                 this.challengeText = "A marvelous match we'll\nhave here in the castle."
                 backgroundColor = '#BCBCBC'
                 break;
             case 'Magnus the Magus':
+                this.add.image(128, 80, 'magnusPortrait');
                 this.challengeText = "I get more upset at \nlosing at other things \nthan chess. I always \nget upset when I lose \nat Monopoly."
                 backgroundColor = '#A4E4FC';
                 break;
