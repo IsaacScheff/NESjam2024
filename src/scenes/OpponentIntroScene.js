@@ -8,6 +8,8 @@ export default class OpponentIntroScene extends Phaser.Scene {
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
+
+        this.load.image('pyroPortrait', 'assets/images/PyroPortrait.png');
     }
 
     create() { 
@@ -20,7 +22,8 @@ export default class OpponentIntroScene extends Phaser.Scene {
         switch(this.selectedOpponent) {
             case 'The Pyromancer':
                 backgroundColor = '#BCBCBC';
-                this.challengeText = "Welcome to my cave, \nConjurer. I'm still \nnew to this game."
+                this.add.image(120, 100, 'pyroPortrait');
+                this.challengeText = "Welcome to my cave, \nConjurer. To be \nhonest I'm still new \nto chess."
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'

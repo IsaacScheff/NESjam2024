@@ -88,6 +88,7 @@ export default class ChessScene extends Phaser.Scene {
 
         this.themeMusic.play(this.musicConfig);
         this.events.on('wake', () => {
+            console.log(this.chess);
             this.allowMusic = true;  // Reset flag when scene is awakened
             let lastTime = this.game.registry.get('lastMusicTime');
             let startTime = this.getNearestTimestamp(lastTime);
@@ -226,6 +227,12 @@ export default class ChessScene extends Phaser.Scene {
         }
 
         this.add.bitmapText(112, 8, 'pixelFont', this.gameText, 8);
+
+        //if(!this.setTurn) {
+            this.playerTurn = (this.chess.turn() === 'w' ? true : false);
+            //console.log(this.chess.turn)
+            //this.setTurn = true;
+        //}
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -342,7 +349,7 @@ export default class ChessScene extends Phaser.Scene {
     } 
 
     opponentTurn() {
-        if (!this.playerTurn) {
+        if (!this.playerTurn && this.chess.turn() === 'b') {
             this.time.delayedCall(1500, () => {
                 const move = this.opponentMove(this.chess); 
                 if (move) {
