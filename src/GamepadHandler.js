@@ -4,7 +4,7 @@ export function setupGamepad(scene) {
         scene.gamepad = scene.input.gamepad.pad1;
         console.log('Gamepad connected!');
     } else {
-        console.log('No gamepad connected at start.');
+        //console.log('No gamepad connected at start.');
     }
 
     // Listen for gamepad connection

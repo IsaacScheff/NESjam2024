@@ -10,8 +10,6 @@ import { setupGamepad } from '../GamepadHandler.js';
 export default class ChessScene extends Phaser.Scene {
     constructor() {
         super("ChessScene");
-        this.selectedPiece = null;
-        this.playerTurn = true;
         this.allowMusic = true;
     }
 
@@ -47,6 +45,9 @@ export default class ChessScene extends Phaser.Scene {
         setupGamepad(this);
         this.gamepadButtons = {};
         CRTEffect(this);
+
+        this.playerTurn = true;
+        this.selectedPiece = null;
 
         let backgroundColor = '#000000';
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
@@ -88,7 +89,6 @@ export default class ChessScene extends Phaser.Scene {
 
         this.themeMusic.play(this.musicConfig);
         this.events.on('wake', () => {
-            console.log(this.chess);
             this.allowMusic = true;  // Reset flag when scene is awakened
             let lastTime = this.game.registry.get('lastMusicTime');
             let startTime = this.getNearestTimestamp(lastTime);
@@ -101,7 +101,11 @@ export default class ChessScene extends Phaser.Scene {
         });
 
         this.chess = new Chess();
-        this.events.on('wake', this.checkTurn, this);
+
+        if (!this.isWakeListenerAdded) {
+            this.events.on('wake', this.checkTurn, this);
+            this.isWakeListenerAdded = true;  // Set the flag indicating the listener is added
+        }
 
         // Graphics object to draw squares
         const boardGraphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
@@ -129,17 +133,19 @@ export default class ChessScene extends Phaser.Scene {
         
         this.initGameState();
 
-        this.anims.create({
-            key: 'cursorAnimation',
-            frames: [
-                { key: 'cursorBase' },
-                { key: 'cursorOuter' },
-                { key: 'cursorMiddle' },
-                { key: 'cursorInner' }
-            ],
-            frameRate: 3,  
-            repeat: -1  // loops permanantly 
-        });
+        if (!this.anims.exists('cursorAnimation')) {
+            this.anims.create({
+                key: 'cursorAnimation',
+                frames: [
+                    { key: 'cursorBase' },
+                    { key: 'cursorOuter' },
+                    { key: 'cursorMiddle' },
+                    { key: 'cursorInner' }
+                ],
+                frameRate: 3,  
+                repeat: -1  // loops permanantly 
+            });
+        }
         this.cursorCol = 4; // cursor initialised on e2
         this.cursorRow = 6; 
         const cursor = this.add.sprite(
@@ -227,12 +233,6 @@ export default class ChessScene extends Phaser.Scene {
         }
 
         this.add.bitmapText(112, 8, 'pixelFont', this.gameText, 8);
-
-        //if(!this.setTurn) {
-            this.playerTurn = (this.chess.turn() === 'w' ? true : false);
-            //console.log(this.chess.turn)
-            //this.setTurn = true;
-        //}
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -347,7 +347,7 @@ export default class ChessScene extends Phaser.Scene {
             this.playerTurn = true;  
         }
     } 
-
+    
     opponentTurn() {
         if (!this.playerTurn && this.chess.turn() === 'b') {
             this.time.delayedCall(1500, () => {
@@ -396,12 +396,11 @@ export default class ChessScene extends Phaser.Scene {
             this.opponentTurn();  
         }
     }
-
+   
     checkTurn() {
         const winner = this.game.registry.get('fightWinner');
-        //console.log("Winner from fight: ", winner);
         if (winner === 'defender') {
-            this.handleDefenderWin(winner);
+            this.handleDefenderWin();
         } else { 
             this.checkGameStatus(); 
             if (!this.playerTurn) {
@@ -569,5 +568,9 @@ export default class ChessScene extends Phaser.Scene {
                 this.scene.start('GameResultScene'); 
             });
         }
+    }
+    shutdown() {
+        this.events.off('wake', this.checkTurn, this);
+        this.isWakeListenerAdded = false;  // Reset the flag
     }
 }

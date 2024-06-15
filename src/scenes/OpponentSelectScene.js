@@ -65,7 +65,6 @@ export default class OpponentSelectScene extends Phaser.Scene {
         const selectedOpponent = this.opponents[this.selectedIndex].text;
         this.game.registry.set('selectedOpponent', selectedOpponent);
         this.scene.start('OpponentIntroScene');
-        //this.scene.start('ChessScene'); 
     }
 
     handleGamepadInput(buttonIndex, action) {

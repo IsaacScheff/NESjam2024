@@ -10,6 +10,8 @@ export default class OpponentIntroScene extends Phaser.Scene {
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
 
         this.load.image('pyroPortrait', 'assets/images/PyroPortrait.png');
+        this.load.image('witchPortrait', 'assets/images/WitchPortrait.png');
+        this.load.image('necroPortrait', 'assets/images/NecroPortrait.png');
     }
 
     create() { 
@@ -27,10 +29,12 @@ export default class OpponentIntroScene extends Phaser.Scene {
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
+                this.add.image(128, 80, 'witchPortrait');
                 this.challengeText = "Conjurer, I hope you find \nmy cabin to be cozy."
                 break;
             case 'Mr. Necromancer':
                 backgroundColor = '#4428BC';
+                this.add.image(128, 80, 'necroPortrait');
                 this.challengeText = "Beware the march of my\nzombie pawns, Conjurer."
                 break;
             case 'Royal Magician':
@@ -50,9 +54,7 @@ export default class OpponentIntroScene extends Phaser.Scene {
         graphics.fillRect(0, 120, screenWidth, barHeight);
         
         this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-        //TODO: set background color
-        //TODO: set black graphic for words
+        
         this.add.bitmapText(40, 140, 'pixelFont', this.challengeText, 8);
         this.add.bitmapText(80, 200, 'pixelFont', 'PRESS START', 8);
 
