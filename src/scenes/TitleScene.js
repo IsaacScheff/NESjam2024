@@ -53,14 +53,14 @@ export default class TitleScene extends Phaser.Scene {
                     paletteNames: paletteKeys,
                     spriteSheet: spriteConfigs[type],
                     animations: [
-                        { key: 'sizzle', frameRate: 10, startFrame: 0, endFrame: 2, repeat: 3 }
+                        { key: 'intro', frameRate: 10, startFrame: 0, endFrame: 2, repeat: 3 }
                     ]
                 };
                 createPalettes(config, this.game);
     
                 const randomStartSuffix = Phaser.Math.RND.pick(paletteKeys);
                 let sprite = this.add.sprite(positions[typeIndex * 2 + i].x, positions[typeIndex * 2 + i].y, `${config.spriteSheet.key}-${randomStartSuffix}`);
-                sprite.anims.play(`${config.spriteSheet.key}-${randomStartSuffix}-sizzle`);
+                sprite.anims.play(`${config.spriteSheet.key}-${randomStartSuffix}-intro`);
     
                 sprite.on('animationcomplete', () => {
                     this.cycleAnimation(sprite, config, paletteKeys);
@@ -77,7 +77,7 @@ export default class TitleScene extends Phaser.Scene {
     
     cycleAnimation(sprite, config, paletteKeys) {
         const newSuffix = Phaser.Math.RND.pick(paletteKeys);
-        const newAnimKey = `${config.spriteSheet.key}-${newSuffix}-sizzle`;
+        const newAnimKey = `${config.spriteSheet.key}-${newSuffix}-intro`;
         sprite.anims.play(newAnimKey);
     }
 
