@@ -32,7 +32,7 @@ export default class OpponentIntroScene extends Phaser.Scene {
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
                 this.add.image(128, 80, 'witchPortrait');
-                this.challengeText = "Conjurer, I hope you find \nmy cabin to be cozy."
+                this.challengeText = "Conjurer, I hope you \nenjoy my cozy cabin."
                 break;
             case 'Mr. Necromancer':
                 backgroundColor = '#4428BC';
