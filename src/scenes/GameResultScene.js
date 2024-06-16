@@ -13,6 +13,9 @@ export default class GameResultScene extends Phaser.Scene {
         this.load.image('necroPortrait', 'assets/images/NecroPortrait.png');
         this.load.image('royalPortrait', 'assets/images/RoyalPortrait.png');
         this.load.image('magnusPortrait', 'assets/images/MagnusPortrait.png');
+
+        this.load.audio('winJingle', 'assets/sounds/win.mp3');
+        this.load.audio('loseJingle', 'assets/sounds/lose.mp3');
     }
 
     create() { 
@@ -64,9 +67,11 @@ export default class GameResultScene extends Phaser.Scene {
         switch(this.result) {
             case 'player':
                 this.resultsText = this.playerWinText;
+                this.sound.play('winJingle');
                 break;
             case 'opponent':
                 this.resultsText = this.oppWinText;
+                this.sound.play('winJingle');
                 break;
             case 'draw':
                 this.resultsText = 'Looks like a tie';

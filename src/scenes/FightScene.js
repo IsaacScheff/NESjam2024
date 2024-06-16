@@ -110,6 +110,7 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'Magnus the Magus':
                 this.load.image('grass', 'assets/images/Grass.png');
+                this.load.image('sword', 'assets/images/PawnSwordBase.png');
                 break;
         }
     }
@@ -157,7 +158,6 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'Royal Magician':
                 backgroundColor = '#BCBCBC'
-                //this.pyroCaveSetUp();
                 this.royalSetUp();
                 this.pieceVelocity = 130;
                 this.opponentSuffix = 'royal';
@@ -1017,6 +1017,18 @@ export default class FightScene extends Phaser.Scene {
 
     magnusSetUp() {
         this.tiles = this.createGroundTiles('grass');
+
+        this.knives = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite
+        });
+    
+        // Timer to spawn knives at random positions
+        this.time.addEvent({
+            delay: 1300,  //every 1.3 seconds
+            callback: this.spawnKnife,
+            callbackScope: this,
+            loop: true
+        });
     }
     createStarSky(tileSprite) {
         const tiles = this.physics.add.staticGroup();

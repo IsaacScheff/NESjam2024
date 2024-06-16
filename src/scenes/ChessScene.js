@@ -59,7 +59,7 @@ export default class ChessScene extends Phaser.Scene {
                 break;
             case 'Witch of the Forrest':
                 backgroundColor = '#503000'
-                this.opponentMove = makeSimpleMove;
+                this.opponentMove = makeMinimaxMove;
                 break;
             case 'Mr. Necromancer':
                 backgroundColor = '#4428BC';
