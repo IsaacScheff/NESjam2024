@@ -105,8 +105,8 @@ export default class FightScene extends Phaser.Scene {
                 this.load.image('star', 'assets/images/Star.png');
                 break;
             case 'Royal Magician':
-                this.load.image('stone', 'assets/images/StoneBlock1.png');
-                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                this.load.image('carpet', 'assets/images/CastleCarpet.png');
+                this.load.image('castleWindow', 'assets/images/CastleWindow.png');
                 this.load.image('sword', 'assets/images/PawnSwordBase.png');
                 break;
             case 'Magnus the Magus':
@@ -1008,7 +1008,9 @@ export default class FightScene extends Phaser.Scene {
     }
 
     royalSetUp() {
-        this.tiles = this.createGroundTiles('stone'); 
+        this.tiles = this.createGroundTiles('carpet');
+        this.add.sprite(48, 58, 'castleWindow');
+        this.add.sprite(208, 58, 'castleWindow'); 
     
         this.knives = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite

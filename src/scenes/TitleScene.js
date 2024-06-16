@@ -17,23 +17,25 @@ export default class TitleScene extends Phaser.Scene {
         this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20 });
         this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
+        this.load.image('logo', 'assets/images/CCJLogo.png');
     }
     create() {
         setupGamepad(this);
         CRTEffect(this);
     
+        this.add.image(130, 100, 'logo');
         const paletteKeys = ['pyro', 'witch', 'necro', 'royal', 'magnus'];
         const positions = [
-            { x: 230, y: 150 },  // First Pawn
-            { x: 30, y: 50 },  
-            { x: 80, y: 150 },  // First Knight
-            { x: 180, y: 50 },  
-            { x: 30, y: 150 }, // First Bishop
-            { x: 230, y: 50 }, 
-            { x: 180, y: 150 }, // First Rook
-            { x: 80, y: 50 }, 
-            { x: 130, y: 50 }, //First Queen 
-            { x: 130, y: 150 }  
+            { x: 230, y: 160 },  // First Pawn
+            { x: 30, y: 40 },  
+            { x: 80, y: 160 },  // First Knight
+            { x: 180, y: 40 },  
+            { x: 30, y: 160 }, // First Bishop
+            { x: 230, y: 40 }, 
+            { x: 180, y: 160 }, // First Rook
+            { x: 80, y: 40 }, 
+            { x: 130, y: 40 }, //First Queen 
+            { x: 130, y: 160 }  
         ];
         
     
