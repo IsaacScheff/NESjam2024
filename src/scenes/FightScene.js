@@ -24,7 +24,6 @@ export default class FightScene extends Phaser.Scene {
                 this.load.image('swordThrust', 'assets/images/PawnSwordFinal.png');
                 this.load.spritesheet('whitePawnBreak', 'assets/images/WhitePawnBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('whitePawnWalking', 'assets/images/WhitePawnWalking.png', { frameWidth: 16, frameWidth: 16 });
-                this.load.spritesheet('whitePawnJump', 'assets/images/WhitePawnJump.png', { frameWidth: 16, frameWidth: 16 });
                 break;
             case 'n':
                 this.load.image('w_n', 'assets/images/WhiteKnight.png');
@@ -227,14 +226,6 @@ export default class FightScene extends Phaser.Scene {
                         ],
                         frameRate: 20,
                         repeat: 0
-                    });
-                }
-                if (!this.anims.exists('whitePawnJump')) {
-                    this.anims.create({
-                        key: 'whitePawnJump',
-                        frames: this.anims.generateFrameNumbers('whitePawnJump', { start: 0, end: 3 }), 
-                        frameRate: 30,
-                        repeat: 0 
                     });
                 }
                 if (!this.anims.exists('whitePawnWalking')) {
@@ -670,9 +661,7 @@ export default class FightScene extends Phaser.Scene {
             this.playerSword.flipX = true;
             this.updateSwordPosition();
         }
-        if (this.player.texture.key === 'w_p' && this.player.body.touching.down) {
-            this.player.anims.play('whitePawnWalking', true);
-        }
+        this.updatePlayerAnimation();
     }
 
     moveRight() {
@@ -682,25 +671,15 @@ export default class FightScene extends Phaser.Scene {
             this.playerSword.flipX = false;
             this.updateSwordPosition();
         }
-        if (this.player.texture.key === 'w_p' && this.player.body.touching.down) {
-            this.player.anims.play('whitePawnWalking', true);
-        }
+        this.updatePlayerAnimation();
     }
 
     jump() {
         this.playerJumping = true;
         const fightData = this.game.registry.get('fightData');
         if (this.player.body.touching.down) {
-            if (fightData.white === 'p') {
-                this.player.anims.play('whitePawnJump', true).once('animationcomplete', () => {
-                    this.player.setVelocityY(-180);
-                    this.playerJumping = false;
-
-                });
-            } else {
-                this.player.setVelocityY(-180);
-                this.playerJumping = false;
-            }
+            this.player.setVelocityY(-180);
+            this.playerJumping = false;
         }
     }
 
@@ -937,15 +916,10 @@ export default class FightScene extends Phaser.Scene {
 
     updatePlayerAnimation() {
         const fightData = this.game.registry.get('fightData');
-        if(this.playerJumping === true) {
-            return;
-        }
-        if (this.player.body.velocity.x !== 0 && this.player.body.touching.down) {
-            if (fightData.white === 'p') {
+        if (fightData.white === 'p') {
+            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
                 this.player.anims.play('whitePawnWalking', true);
-            }
-        } else {
-            if (fightData.white === 'p') {
+            } else {
                 this.player.anims.stop();
                 this.player.setTexture('w_p');
             }
@@ -1030,8 +1004,11 @@ export default class FightScene extends Phaser.Scene {
         knife.setVelocityY(100);  // Set velocity so knife falls down
         knife.setAngle(180);  // Flip the knife vertically
 
+        this.physics.add.collider(knife, this.player, (knife, player) => {
+            this.damagePlayer(knife, player);
+            knife.destroy();
+        }, null, this);
         this.physics.add.collider(knife, this.tiles, this.knifeHitsGround, null, this);
-        this.physics.add.collider(knife, this.player, this.damagePlayer, null, this);
     }
     
     knifeHitsGround(knife) {
