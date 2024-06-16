@@ -110,8 +110,7 @@ export default class FightScene extends Phaser.Scene {
                 this.load.image('sword', 'assets/images/PawnSwordBase.png');
                 break;
             case 'Magnus the Magus':
-                this.load.image('stone', 'assets/images/StoneBlock1.png');
-                this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                this.load.image('grass', 'assets/images/Grass.png');
                 break;
         }
     }
@@ -166,7 +165,7 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'Magnus the Magus':
                 backgroundColor = '#A4E4FC';
-                this.pyroCaveSetUp();
+                this.magnusSetUp();
                 this.pieceVelocity = 140;
                 this.opponentSuffix = 'magnus';
                 break;
@@ -1040,7 +1039,7 @@ export default class FightScene extends Phaser.Scene {
     }
 
     magnusSetUp() {
-
+        this.tiles = this.createGroundTiles('grass');
     }
     createStarSky(tileSprite) {
         const tiles = this.physics.add.staticGroup();
