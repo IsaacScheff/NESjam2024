@@ -43,7 +43,7 @@ export default class GameResultScene extends Phaser.Scene {
                 break;
             case 'Royal Magician':
                 this.add.image(128, 80, 'royalPortrait');
-                this.oppWinText = "You put up a \nvalient effort.";
+                this.oppWinText = "You put up a \nvaliant effort.";
                 this.playerWinText = 'Aw man, you \nbeat me in front \nof the king.';
                 this.backgroundColor = '#BCBCBC'
                 break;

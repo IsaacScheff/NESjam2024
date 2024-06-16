@@ -48,6 +48,7 @@ export default class ChessScene extends Phaser.Scene {
 
         this.playerTurn = true;
         this.selectedPiece = null;
+        this.gameTextFlag = false;
 
         let backgroundColor = '#000000';
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
@@ -172,6 +173,7 @@ export default class ChessScene extends Phaser.Scene {
         const barHeight = screenHeight / 11;
         graphics.fillRect(0, 0, screenWidth, barHeight);
         this.gameText = '';
+        this.gameMessage = this.add.bitmapText(104, 8, 'pixelFont', '', 8);
     }
    
     placePieces() {
@@ -228,11 +230,17 @@ export default class ChessScene extends Phaser.Scene {
 
         if(!this.playerTurn) {
             this.cursorSprite.setVisible(false);
+            if(!this.gameTextFlag){
+                this.gameText = 'Hmm...'
+            }
         } else {
             this.cursorSprite.setVisible(true);
+            if(!this.gameTextFlag){
+                this.gameText = 'Your Turn'
+            }
         }
 
-        this.add.bitmapText(112, 8, 'pixelFont', this.gameText, 8);
+        this.gameMessage.text = this.gameText;
     }
     
     moveCursor(dx, dy) { //the added 0.5 to column and row value correct cursor alignment
@@ -422,7 +430,6 @@ export default class ChessScene extends Phaser.Scene {
         try {
             this.chess.load(newFEN);
             if (this.chess.inCheck()) {
-                //console.log("King is in check, player must move again.");
                 this.playerTurn = !this.playerTurn;
                 if(!this.playerTurn){
                     this.opponentTurn();
@@ -434,13 +441,11 @@ export default class ChessScene extends Phaser.Scene {
                 this.chess.load(newFEN);
             }
             this.placePieces(); 
-            if (!this.playerTurn) {
-                this.opponentTurn();
-            }
         } catch (error) {
             console.log("Failed to load FEN: ", error);
             // Handle the error, possibly by resetting to a safe state or notifying the player
         }
+        this.checkTurn(); //to update game text
     }
 
     removePieceFromFEN(fen, lastMove) {
@@ -541,23 +546,27 @@ export default class ChessScene extends Phaser.Scene {
             const winner = this.chess.turn() === 'w' ? 'opponent' : 'player';
             this.game.registry.set('result', `${winner}`);
             this.gameText = 'Checkmate!';
+            this.gameTextFlag = true;
             console.log(`${winner} wins by checkmate`);
             gameOver = true;
         } else if (this.chess.isStalemate()) {
             this.game.registry.set('result', 'draw');
             this.gameText = "Stalemate!"
+            this.gameTextFlag = true;
             console.log("Stalemate");
             gameOver = true;
         } else if (this.chess.isDraw()) {
             this.game.registry.set('result', 'draw');
             this.gameText = "Draw!";
+            this.gameTextFlag = true;
             gameOver = true;
             console.log("Draw");
         } else if (this.chess.isCheck()) {
             this.gameText = "Check!"
+            this.gameTextFlag = true;
             console.log("Check");
         } else {
-            this.gameText = '';
+            this.gameTextFlag = false;
         }
         if(gameOver) {
             this.time.delayedCall(3500, () => {

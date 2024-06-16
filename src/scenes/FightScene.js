@@ -107,6 +107,7 @@ export default class FightScene extends Phaser.Scene {
             case 'Royal Magician':
                 this.load.image('stone', 'assets/images/StoneBlock1.png');
                 this.load.spritesheet('torches', 'assets/images/Torches.png', {frameWidth: 16, frameHeight: 16});
+                this.load.image('sword', 'assets/images/PawnSwordBase.png');
                 break;
             case 'Magnus the Magus':
                 this.load.image('stone', 'assets/images/StoneBlock1.png');
@@ -158,7 +159,8 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'Royal Magician':
                 backgroundColor = '#BCBCBC'
-                this.pyroCaveSetUp();
+                //this.pyroCaveSetUp();
+                this.royalSetUp();
                 this.pieceVelocity = 130;
                 this.opponentSuffix = 'royal';
                 break;
@@ -1006,7 +1008,33 @@ export default class FightScene extends Phaser.Scene {
     }
 
     royalSetUp() {
+        this.tiles = this.createGroundTiles('stone'); 
+    
+        this.knives = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite
+        });
+    
+        // Timer to spawn knives at random positions
+        this.time.addEvent({
+            delay: 1500,  //1.5 seconds
+            callback: this.spawnKnife,
+            callbackScope: this,
+            loop: true
+        });
+    }
+    
+    spawnKnife() {
+        const xPosition = Phaser.Math.Between(0, this.sys.game.config.width);  // Random x position within game width
+        const knife = this.knives.create(xPosition, 0, 'sword');  // Spawn at top of the game world
+        knife.setVelocityY(100);  // Set velocity so knife falls down
+        knife.setAngle(180);  // Flip the knife vertically
 
+        this.physics.add.collider(knife, this.tiles, this.knifeHitsGround, null, this);
+        this.physics.add.collider(knife, this.player, this.damagePlayer, null, this);
+    }
+    
+    knifeHitsGround(knife) {
+        knife.destroy();  // Destroy knife when it hits the ground
     }
 
     magnusSetUp() {
