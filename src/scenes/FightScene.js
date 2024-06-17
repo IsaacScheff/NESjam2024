@@ -54,29 +54,29 @@ export default class FightScene extends Phaser.Scene {
         switch(this.fightData.black) {
             case 'p':
                 this.load.spritesheet('pyroPawn', 'assets/images/PyroPawn.png',  { frameWidth: 16, frameHeight: 20 });
-                this.load.audio('pawnMusic', 'assets/sounds/pawnbattle.mp3');
+                //this.load.audio('pawnMusic', 'assets/sounds/pawnbattle.mp3');
                 this.load.spritesheet('blackPawnBreak', 'assets/images/BlackPawnBreak.png', { frameWidth: 16, frameHeight: 16 });
                 break;
             case 'n':
                 this.load.spritesheet('pyroKnight', 'assets/images/PyroKnight.png', { frameWidth: 19, frameHeight: 18 });
                 this.load.spritesheet('blackKnightBreak', 'assets/images/BlackKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
-                this.load.audio('knightMusic', 'assets/sounds/knightbattle.mp3');
+                //this.load.audio('knightMusic', 'assets/sounds/knightbattle.mp3');
                 break;
             case 'b':
                 this.load.spritesheet('pyroBishop', 'assets/images/PyroBishop.png', { frameWidth: 16, frameHeight: 18});
                 this.load.spritesheet('blackBishopBreak', 'assets/images/BlackBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
-                this.load.audio('bishopMusic', 'assets/sounds/bishopbattle.mp3');
+                //this.load.audio('bishopMusic', 'assets/sounds/bishopbattle.mp3');
                 break;
             case 'r':
                 this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20});
                 this.load.spritesheet('blackRookBreak', 'assets/images/BlackRookBreak.png', { frameWidth: 16, frameHeight: 16 });
-                this.load.audio('rookMusic', 'assets/sounds/rookbattle.mp3');
+                //this.load.audio('rookMusic', 'assets/sounds/rookbattle.mp3');
                 this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
                 break;
             case 'q':
                 this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
-                this.load.audio('queenMusic', 'assets/sounds/queenbattle.mp3');
+                //this.load.audio('queenMusic', 'assets/sounds/queenbattle.mp3');
                 this.load.spritesheet('blackQueenBreak', 'assets/images/BlackQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('pyroBishopBall', 'assets/images/BishopFireBall.png', { frameWidth: 6, frameHeight: 6 });
                 this.load.image('pyroProjectile', 'assets/images/pyroProjectile.png');
@@ -461,8 +461,8 @@ export default class FightScene extends Phaser.Scene {
                 }
                 break;
         }
-        this.battleMusic = this.sound.add(this.musicKey);
-        this.battleMusic.play(this.musicConfig);
+        // this.battleMusic = this.sound.add(this.musicKey);
+        // this.battleMusic.play(this.musicConfig);
 
 
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
@@ -802,7 +802,11 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-                    this.battleMusic.stop();
+                    //this.battleMusic.stop();
+                    let battleMusic = this.game.registry.get('battleMusic');
+                    if (battleMusic && battleMusic.isPlaying) {
+                        battleMusic.stop();
+                    }
                     this.scene.switch('ChessScene');
                 });
             }
@@ -863,7 +867,11 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-                    this.battleMusic.stop();
+                    //this.battleMusic.stop();
+                    let battleMusic = this.game.registry.get('battleMusic');
+                    if (battleMusic && battleMusic.isPlaying) {
+                        battleMusic.stop();
+                    }
                     this.scene.switch('ChessScene');
                 });
 

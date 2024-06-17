@@ -7,7 +7,6 @@ export default class TransitionScene extends Phaser.Scene {
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
-        this.load.audio('gong', 'assets/sounds/gong.wav');
 
         this.load.image('b_r', 'assets/images/BlackRook.png');
         this.load.image('b_p', 'assets/images/BlackPawn.png');
@@ -22,6 +21,30 @@ export default class TransitionScene extends Phaser.Scene {
         this.load.image('w_k', 'assets/images/WhiteKing.png');
         this.load.image('w_q', 'assets/images/WhiteQueen.png');
         this.load.image('w_b', 'assets/images/WhiteBishop.png');
+
+        this.fightData = this.game.registry.get('fightData');
+        switch(this.fightData.black) {
+            case 'p':
+                this.load.audio('pawnMusic', 'assets/sounds/pawnbattle.mp3');
+                this.musicKey = 'pawnMusic';
+                break;
+            case 'n':
+                this.load.audio('knightMusic', 'assets/sounds/knightbattle.mp3');
+                this.musicKey = 'knightMusic';
+                break;
+            case 'b':
+                this.load.audio('bishopMusic', 'assets/sounds/bishopbattle.mp3');
+                this.musicKey = 'bishopMusic';
+                break;
+            case 'r':
+                this.load.audio('rookMusic', 'assets/sounds/rookbattle.mp3');
+                this.musicKey = 'rookMusic';
+                break;
+            case 'q':
+                this.load.audio('queenMusic', 'assets/sounds/queenbattle.mp3');
+                this.musicKey = 'queenMusic';
+                break;
+        } 
     }
 
     create() { 
@@ -30,12 +53,22 @@ export default class TransitionScene extends Phaser.Scene {
         const whitePieceKey = `w_${fightData.white}`;
         const blackPieceKey = `b_${fightData.black}`;
 
+        this.musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            loop: true,
+            delay: 0
+        };
+        this.battleMusic = this.sound.add(this.musicKey);
+        this.battleMusic.play(this.musicConfig);
+        this.game.registry.set('battleMusic', this.battleMusic);
+
         this.add.bitmapText(112, 100, 'pixelFont', 'BATTLE!', 8);
 
         const whitePieceImage = this.add.image(56, 100, whitePieceKey);
         const blackPieceImage = this.add.image(200, 100, blackPieceKey);
-
-        this.sound.play("gong");
 
         this.time.delayedCall(1000, () => {
             this.scene.start('FightScene');
