@@ -14,9 +14,10 @@ export default class FightScene extends Phaser.Scene {
 
     preload() {
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
-        const fightData = this.game.registry.get('fightData');
+        this.fightData = this.game.registry.get('fightData');
+        console.log(this.fightData.white);
 
-        switch(fightData.white) {
+        switch(this.fightData.white) {
             case 'p':
                 this.load.image('w_p', 'assets/images/WhitePawn.png');
                 this.load.image('sword', 'assets/images/PawnSwordBase.png');
@@ -32,6 +33,7 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'b':
                 this.load.image('w_b', 'assets/images/WhiteBishop.png');
+                this.load.spritesheet('whiteBishopWalking', 'assets/images/WhiteBishopWalking.png', { frameWidth: 16, frameWidth: 16 });
                 this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
                 break;
@@ -48,7 +50,7 @@ export default class FightScene extends Phaser.Scene {
                 break;
         }
         
-        switch(fightData.black) {
+        switch(this.fightData.black) {
             case 'p':
                 this.load.spritesheet('pyroPawn', 'assets/images/PyroPawn.png',  { frameWidth: 16, frameHeight: 20 });
                 this.load.audio('pawnMusic', 'assets/sounds/pawnbattle.mp3');
@@ -85,6 +87,7 @@ export default class FightScene extends Phaser.Scene {
 
         this.load.image('heart', 'assets/images/Heart.png');
         this.load.image('violetHeart', 'assets/images/VioletHeart.png');
+        this.load.audio('crumble', 'assets/sounds/crumble.wav');
 
         this.load.image('oppPalette', 'assets/images/OpponentPalette.png');
 
@@ -175,9 +178,9 @@ export default class FightScene extends Phaser.Scene {
         this.add.bitmapText(10, 5, 'pixelFont', 'PLAYER', 8);
         this.add.bitmapText(120, 5, 'pixelFont', 'OPPONENT', 8);
 
-        const fightData = this.game.registry.get('fightData');
-        this.playerHealth = healthMap[fightData.white] || 1;  // Default to 1 in case piece type is undefined
-        this.opponentHealth = healthMap[fightData.black] || 1;
+        //const fightData = this.game.registry.get('fightData');
+        this.playerHealth = healthMap[this.fightData.white] || 1;  // Default to 1 in case piece type is undefined
+        this.opponentHealth = healthMap[this.fightData.black] || 1;
 
         this.attacker = this.game.registry.get('attacker');
         if(this.attacker == 'player'){
@@ -211,7 +214,7 @@ export default class FightScene extends Phaser.Scene {
         // Choose sprite based on the type of white piece
         let playerSpriteKey = 'w_p'; // default to pawn
         let isKnight = false;  // Flag to indicate if the player is a knight
-        switch(fightData.white) {
+        switch(this.fightData.white) {
             case 'p':
                 if (!this.anims.exists('playerSwordSwing')) {
                     this.anims.create({
@@ -268,6 +271,14 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'b':
                 playerSpriteKey = 'w_b'
+                if (!this.anims.exists('whiteBishopWalking')) {
+                    this.anims.create({
+                        key: 'whiteBishopWalking',
+                        frames: this.anims.generateFrameNumbers('whiteBishopWalking', { start: 0, end: 3 }), 
+                        frameRate: 10,
+                        repeat: -1 
+                    });
+                }
                 if (!this.anims.exists('whiteBishopBreaking')) {
                     this.anims.create({
                         key: 'whiteBishopBreaking',
@@ -304,7 +315,7 @@ export default class FightScene extends Phaser.Scene {
         this.opponentSpriteKey = 'pyroPawn-' + this.opponentSuffix; // Default to pawn
         let opponentBehaviour = 'normal'; // Default to normal pawn behavior
 
-        switch(fightData.black) {
+        switch(this.fightData.black) {
             case 'p':
                 let pawnConfig = {
                     paletteKey: 'oppPalette',
@@ -441,7 +452,7 @@ export default class FightScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(56, 100, playerSpriteKey);
         this.player.setCollideWorldBounds(true);
 
-        if((fightData.white === 'b' || fightData.white === 'q') && !this.anims.exists('bishopLightBall')) {
+        if((this.fightData.white === 'b' || this.fightData.white === 'q') && !this.anims.exists('bishopLightBall')) {
             this.anims.create({
                 key: 'bishopLightBall',
                 frames: this.anims.generateFrameNumbers('bishopLightBall', { start: 0, end: 2 }), 
@@ -450,7 +461,7 @@ export default class FightScene extends Phaser.Scene {
             });
         }
 
-        if((fightData.black === 'b' || fightData.black === 'q')) {
+        if((this.fightData.black === 'b' || this.fightData.black === 'q')) {
             let pyroBishopBallConfig = {
                 paletteKey: 'oppPalette',
                 paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
@@ -465,7 +476,7 @@ export default class FightScene extends Phaser.Scene {
             };
             createPalettes(pyroBishopBallConfig, this.game);
         }
-        if((fightData.black === 'r' || fightData.black === 'q')) {
+        if((this.fightData.black === 'r' || this.fightData.black === 'q')) {
             let pyroProjectileConfig = {
                 paletteKey: 'oppPalette',
                 paletteNames: ['pyro', 'witch', 'necro', 'royal', 'magnus'],
@@ -486,9 +497,9 @@ export default class FightScene extends Phaser.Scene {
         this.opponentPiece.body.setOffset((this.opponentPiece.width - 16) / 2, (this.opponentPiece.height - 20) / 2);
         this.physics.add.collider(this.opponentPiece, this.tiles);
 
-        if(fightData.white === 'p') {
+        if(this.fightData.white === 'p') {
             this.playerSword = this.createSword(this.player);
-        } else if (fightData.white === 'b' || fightData.white === 'q') {
+        } else if (this.fightData.white === 'b' || this.fightData.white === 'q') {
             this.bishopLightBall = this.createLightBall(this.player);
         }
 
@@ -564,7 +575,7 @@ export default class FightScene extends Phaser.Scene {
             this.updateSwordPosition();
         }
 
-        if (this.bishopLightBall && (this.player.texture.key === 'w_b' || this.player.texture.key === 'w_q')) {
+        if (this.bishopLightBall && (this.fightData.white === 'b' || this.fightData.white === 'q')) {
             const radius = 20;  // Radius of the orbit
             const speed = 0.003;  // Speed of the orbit
             this.bishopLightBall.x = this.player.x + Math.cos(this.time.now * speed) * radius;
@@ -685,7 +696,7 @@ export default class FightScene extends Phaser.Scene {
 
     jump() {
         this.playerJumping = true;
-        const fightData = this.game.registry.get('fightData');
+        //const fightData = this.game.registry.get('fightData');
         if (this.player.body.touching.down) {
             this.player.setVelocityY(-180);
             this.playerJumping = false;
@@ -742,8 +753,8 @@ export default class FightScene extends Phaser.Scene {
 
                 // Determine the appropriate breaking sprite based on the fight data
                 let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
-                const fightData = this.game.registry.get('fightData');
-                switch(fightData.white) {
+                //const fightData = this.game.registry.get('fightData');
+                switch(this.fightData.white) {
                     case 'n':
                         breakingSpriteKey = 'whiteKnightBreak';  
                         break;
@@ -762,6 +773,7 @@ export default class FightScene extends Phaser.Scene {
                 let breakingSprite = this.add.sprite(this.player.x, this.player.y, breakingSpriteKey);
                 breakingSprite.play(breakingSpriteKey + 'ing'); // Append 'ing' to match the animation key format
                 breakingSprite.flipX = this.player.flipX;
+                this.sound.play('crumble', { volume: 2 });
     
                 this.game.registry.set('fightWinner', (this.attacker === 'player' ? 'defender' : 'attacker'));
 
@@ -800,9 +812,9 @@ export default class FightScene extends Phaser.Scene {
                 if(this.bishopFireBall) {
                     this.bishopFireBall.setActive(false).setVisible(false);
                 }
-                const fightData = this.game.registry.get('fightData');
+                //const fightData = this.game.registry.get('fightData');
                 let breakingSpriteKey = 'blackPawnBreaking'; // Default to pawn breaking animation
-                switch(fightData.black) {
+                switch(this.fightData.black) {
                     case 'n':
                         breakingSpriteKey = 'blackKnightBreaking';  
                         break;
@@ -822,16 +834,14 @@ export default class FightScene extends Phaser.Scene {
     
                 this.playerInvulnerable = true; //otherwise player takes damage from invisible enemy
                 let breakingSprite = this.add.sprite(this.opponentAI.sprite.x, this.opponentAI.sprite.y, breakingSpriteKey);
+                breakingSprite.flipX = this.opponentAI.sprite.flipX;
                 breakingSprite.play(breakingSpriteKey);
+                this.sound.play('crumble', { volume: 2 });
                 breakingSprite.on('animationcomplete', () => {
                     breakingSprite.destroy();
                 });
             
                 this.game.registry.set('fightWinner', (this.attacker === 'opponent' ? 'defender' : 'attacker'));
-
-                breakingSprite.on('animationcomplete', () => {
-                    breakingSprite.destroy();
-                });
     
                 this.time.delayedCall(2000, () => {
                     if(this.playerSword) {
@@ -924,20 +934,27 @@ export default class FightScene extends Phaser.Scene {
     }
 
     updatePlayerAnimation() {
-        const fightData = this.game.registry.get('fightData');
-        if (fightData.white === 'p') {
+        //const fightData = this.game.registry.get('fightData');
+        if (this.fightData.white === 'p') {
             if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
                 this.player.anims.play('whitePawnWalking', true);
             } else {
                 this.player.anims.stop();
                 this.player.setTexture('w_p');
             }
-        } else if (fightData.white === 'n') {
+        } else if (this.fightData.white === 'n') {
             if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
                 this.player.anims.play('whiteKnightWalking', true);
             } else {
                 this.player.anims.stop();
                 this.player.setTexture('w_n');
+            }
+        } else if (this.fightData.white === 'b') {
+            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+                this.player.anims.play('whiteBishopWalking', true);
+            } else {
+                this.player.anims.stop();
+                this.player.setTexture('w_b');
             }
         } 
     }
