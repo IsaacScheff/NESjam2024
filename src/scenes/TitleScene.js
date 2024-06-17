@@ -26,16 +26,16 @@ export default class TitleScene extends Phaser.Scene {
         this.add.image(130, 100, 'logo');
         const paletteKeys = ['pyro', 'witch', 'necro', 'royal', 'magnus'];
         const positions = [
-            { x: 230, y: 160 },  // First Pawn
-            { x: 30, y: 40 },  
-            { x: 80, y: 160 },  // First Knight
-            { x: 180, y: 40 },  
-            { x: 30, y: 160 }, // First Bishop
-            { x: 230, y: 40 }, 
-            { x: 180, y: 160 }, // First Rook
-            { x: 80, y: 40 }, 
-            { x: 130, y: 40 }, //First Queen 
-            { x: 130, y: 160 }  
+            { x: 230, y: 210 },  // First Pawn
+            { x: 30, y: 20 },  
+            { x: 30, y: 210 },  // First Knight
+            { x: 230, y: 70 },  
+            { x: 30, y: 170 }, // First Bishop
+            { x: 230, y: 20 }, 
+            { x: 30, y: 70 }, // First Rook
+            { x: 230, y: 170 }, 
+            { x: 230, y: 120 }, //First Queen 
+            { x: 30, y: 120 }  
         ];
         
     

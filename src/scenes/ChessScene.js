@@ -220,8 +220,8 @@ export default class ChessScene extends Phaser.Scene {
             this.handleGamepadInput(12, 'up');
             this.handleGamepadInput(13, 'down');
 
-            this.handleGamepadInput(0, 'A');
-            this.handleGamepadInput(2, 'B');
+            this.handleGamepadInput(1, 'A');
+            this.handleGamepadInput(0, 'B');
         }
         
         if(!this.themeMusic.isPlaying && this.allowMusic) {
