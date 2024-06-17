@@ -71,7 +71,7 @@ export default class GameResultScene extends Phaser.Scene {
                 break;
             case 'opponent':
                 this.resultsText = this.oppWinText;
-                this.sound.play('winJingle');
+                this.sound.play('loseJingle');
                 break;
             case 'draw':
                 this.resultsText = 'Looks like a tie';

@@ -802,7 +802,6 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-                    //this.battleMusic.stop();
                     let battleMusic = this.game.registry.get('battleMusic');
                     if (battleMusic && battleMusic.isPlaying) {
                         battleMusic.stop();
@@ -867,7 +866,6 @@ export default class FightScene extends Phaser.Scene {
                     if(this.bishopLightBall) {
                         this.bishopLightBall = null;
                     }
-                    //this.battleMusic.stop();
                     let battleMusic = this.game.registry.get('battleMusic');
                     if (battleMusic && battleMusic.isPlaying) {
                         battleMusic.stop();
