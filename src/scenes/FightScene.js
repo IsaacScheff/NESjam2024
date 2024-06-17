@@ -28,6 +28,7 @@ export default class FightScene extends Phaser.Scene {
             case 'n':
                 this.load.image('w_n', 'assets/images/WhiteKnight.png');
                 this.load.spritesheet('whiteKnightBreak', 'assets/images/WhiteKnightBreak.png', { frameWidth: 16, frameHeight: 16 });
+                this.load.spritesheet('whiteKnightWalking', 'assets/images/WhiteKnightWalking.png', { frameWidth: 16, frameWidth: 16 });
                 break;
             case 'b':
                 this.load.image('w_b', 'assets/images/WhiteBishop.png');
@@ -247,6 +248,14 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'n':
                 playerSpriteKey = 'w_n'; 
+                if (!this.anims.exists('whiteKnightWalking')) {
+                    this.anims.create({
+                        key: 'whiteKnightWalking',
+                        frames: this.anims.generateFrameNumbers('whiteKnightWalking', { start: 0, end: 3 }), 
+                        frameRate: 10,
+                        repeat: -1 
+                    });
+                }
                 if (!this.anims.exists('whiteKnightBreaking')) {
                     this.anims.create({
                         key: 'whiteKnightBreaking',
@@ -923,7 +932,14 @@ export default class FightScene extends Phaser.Scene {
                 this.player.anims.stop();
                 this.player.setTexture('w_p');
             }
-        }
+        } else if (fightData.white === 'n') {
+            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+                this.player.anims.play('whiteKnightWalking', true);
+            } else {
+                this.player.anims.stop();
+                this.player.setTexture('w_n');
+            }
+        } 
     }
 
     pyroCaveSetUp() {
