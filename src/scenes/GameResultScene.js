@@ -36,7 +36,7 @@ export default class GameResultScene extends Phaser.Scene {
                 this.add.image(128, 80, 'witchPortrait');
                 this.oppWinText = "Alright! A win \nfor this witch!";
                 this.playerWinText = 'Ah well, you \nyou win this time.';
-                this.sbackgroundColor = '#503000'
+                this.backgroundColor = '#503000'
                 break;
             case 'Mr. Necromancer':
                 this.add.image(128, 80, 'necroPortrait');
