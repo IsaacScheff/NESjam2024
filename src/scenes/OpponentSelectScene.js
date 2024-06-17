@@ -8,6 +8,8 @@ export default class OpponentSelectScene extends Phaser.Scene {
     preload() {
         this.load.bitmapFont('pixelFont', 'assets/font/pixel.png', 'assets/font/pixel.xml');
         this.load.image('noiseTexture', 'assets/images/noiseTexture.png');
+
+        this.load.audio('titleTheme', 'assets/sounds/titletheme.mp3');
     }
 
     create() {
@@ -31,8 +33,12 @@ export default class OpponentSelectScene extends Phaser.Scene {
         this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyJ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        if (!this.sound.get('titleTheme') || !this.sound.get('titleTheme').isPlaying) {
+            this.themeMusic = this.sound.add('titleTheme', { loop: true });
+            this.themeMusic.play();
+        }
     }
 
     update() {
@@ -40,7 +46,7 @@ export default class OpponentSelectScene extends Phaser.Scene {
             this.moveSelection(-1);
         } else if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keyS)) {
             this.moveSelection(1);
-        } else if (Phaser.Input.Keyboard.JustDown(this.keyEnter) || Phaser.Input.Keyboard.JustDown(this.keyJ)) {
+        } else if (Phaser.Input.Keyboard.JustDown(this.keyJ)) {
             this.confirmSelection();
         }
 
@@ -48,8 +54,7 @@ export default class OpponentSelectScene extends Phaser.Scene {
             this.handleGamepadInput(12, 'up');
             this.handleGamepadInput(13, 'down');
 
-            this.handleGamepadInput(0, 'A');
-            this.handleGamepadInput(9, 'Start');
+            this.handleGamepadInput(1, 'A');
         }
     }
 
@@ -64,6 +69,7 @@ export default class OpponentSelectScene extends Phaser.Scene {
     confirmSelection() {
         const selectedOpponent = this.opponents[this.selectedIndex].text;
         this.game.registry.set('selectedOpponent', selectedOpponent);
+        this.sound.stopByKey('titleTheme');
         this.scene.start('OpponentIntroScene');
     }
 
@@ -80,9 +86,6 @@ export default class OpponentSelectScene extends Phaser.Scene {
                     this.moveSelection(1);
                     break;
                 case 'A':
-                    this.confirmSelection();
-                    break;
-                case 'Start':
                     this.confirmSelection();
                     break;
             }

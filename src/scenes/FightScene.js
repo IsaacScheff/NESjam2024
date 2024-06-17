@@ -1080,8 +1080,8 @@ export default class FightScene extends Phaser.Scene {
     }
 }
 
-const healthMap = {
-    'p': 2,  // Pawn
+const healthMap = { //ended up giving all pieces the same amount of health
+    'p': 3,  // Pawn
     'n': 3,  // Knight
     'b': 3,  // Bishop
     'r': 3,  // Rook

@@ -173,7 +173,7 @@ export default class ChessScene extends Phaser.Scene {
         const barHeight = screenHeight / 11;
         graphics.fillRect(0, 0, screenWidth, barHeight);
         this.gameText = '';
-        this.gameMessage = this.add.bitmapText(104, 8, 'pixelFont', '', 8);
+        this.gameMessage = this.add.bitmapText(90, 8, 'pixelFont', '', 8);
     }
    
     placePieces() {

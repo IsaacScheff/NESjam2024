@@ -18,6 +18,8 @@ export default class TitleScene extends Phaser.Scene {
         this.load.spritesheet('pyroRook', 'assets/images/PyroRook.png', { frameWidth: 18, frameHeight: 20 });
         this.load.spritesheet('pyroQueen', 'assets/images/PyroQueen.png', { frameWidth: 20, frameHeight: 18});
         this.load.image('logo', 'assets/images/CCJLogo.png');
+
+        this.load.audio('titleTheme', 'assets/sounds/titletheme.mp3');
     }
     create() {
         setupGamepad(this);
@@ -37,7 +39,17 @@ export default class TitleScene extends Phaser.Scene {
             { x: 230, y: 120 }, //First Queen 
             { x: 30, y: 120 }  
         ];
-        
+
+        this.musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            loop: true,
+            delay: 0
+        };
+        this.themeMusic = this.sound.add('titleTheme');
+        this.themeMusic.play(this.musicConfig);
     
         const spriteConfigs = {
             Pawn: { key: 'pyroPawn', frameWidth: 16, frameHeight: 20 },

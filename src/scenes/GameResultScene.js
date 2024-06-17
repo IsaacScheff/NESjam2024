@@ -87,7 +87,7 @@ export default class GameResultScene extends Phaser.Scene {
                 this.game.registry.remove(key);
             });
             
-        this.time.delayedCall(4000, () => {
+        this.time.delayedCall(5000, () => {
             this.scene.start('OpponentSelectScene');
         });
     }
