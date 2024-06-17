@@ -4,7 +4,6 @@ import { makeAlphaBetaMove } from '../ai/alphaBetaAI.js';
 import { makeMagnusMove } from '../ai/magnusMoveAI.js';
 import { makeMinimaxMove } from '../ai/minimaxAI.js';
 import { makeRandomMove } from '../ai/randomMoveAI.js';
-import { makeSimpleMove } from '../ai/simpleCaptureAI.js';
 import { setupGamepad } from '../GamepadHandler.js';
 
 export default class ChessScene extends Phaser.Scene {

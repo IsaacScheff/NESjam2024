@@ -179,7 +179,6 @@ export default class FightScene extends Phaser.Scene {
         this.add.bitmapText(10, 5, 'pixelFont', 'PLAYER', 8);
         this.add.bitmapText(120, 5, 'pixelFont', 'OPPONENT', 8);
 
-        //const fightData = this.game.registry.get('fightData');
         this.playerHealth = healthMap[this.fightData.white] || 1;  // Default to 1 in case piece type is undefined
         this.opponentHealth = healthMap[this.fightData.black] || 1;
 
@@ -713,7 +712,6 @@ export default class FightScene extends Phaser.Scene {
 
     jump() {
         this.playerJumping = true;
-        //const fightData = this.game.registry.get('fightData');
         if (this.player.body.touching.down) {
             this.player.setVelocityY(-180);
             this.playerJumping = false;
@@ -770,7 +768,6 @@ export default class FightScene extends Phaser.Scene {
 
                 // Determine the appropriate breaking sprite based on the fight data
                 let breakingSpriteKey = 'whitePawnBreak';  // default to pawn breaking sprite
-                //const fightData = this.game.registry.get('fightData');
                 switch(this.fightData.white) {
                     case 'n':
                         breakingSpriteKey = 'whiteKnightBreak';  
@@ -829,7 +826,6 @@ export default class FightScene extends Phaser.Scene {
                 if(this.bishopFireBall) {
                     this.bishopFireBall.setActive(false).setVisible(false);
                 }
-                //const fightData = this.game.registry.get('fightData');
                 let breakingSpriteKey = 'blackPawnBreaking'; // Default to pawn breaking animation
                 switch(this.fightData.black) {
                     case 'n':
@@ -969,45 +965,6 @@ export default class FightScene extends Phaser.Scene {
             this.player.setTexture(piece.texture);
         }
     }
-
-    // updatePlayerAnimation() {
-    //     if (this.fightData.white === 'p') {
-    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-    //             this.player.anims.play('whitePawnWalking', true);
-    //         } else {
-    //             this.player.anims.stop();
-    //             this.player.setTexture('w_p');
-    //         }
-    //     } else if (this.fightData.white === 'n') {
-    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-    //             this.player.anims.play('whiteKnightWalking', true);
-    //         } else {
-    //             this.player.anims.stop();
-    //             this.player.setTexture('w_n');
-    //         }
-    //     } else if (this.fightData.white === 'b') {
-    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-    //             this.player.anims.play('whiteBishopWalking', true);
-    //         } else {
-    //             this.player.anims.stop();
-    //             this.player.setTexture('w_b');
-    //         }
-    //     } else if (this.fightData.white === 'r') {
-    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-    //             this.player.anims.play('whiteRookWalking', true);
-    //         } else {
-    //             this.player.anims.stop();
-    //             this.player.setTexture('w_r');
-    //         }
-    //     } else if (this.fightData.white === 'q') {
-    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-    //             this.player.anims.play('whiteQueenWalking', true);
-    //         } else {
-    //             this.player.anims.stop();
-    //             this.player.setTexture('w_q');
-    //         }
-    //     } 
-    // }
 
     pyroCaveSetUp() {
         this.tiles = this.createGroundTiles('stone');
