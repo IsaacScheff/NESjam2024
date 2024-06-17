@@ -15,7 +15,6 @@ export default class FightScene extends Phaser.Scene {
     preload() {
         this.selectedOpponent = this.game.registry.get('selectedOpponent');
         this.fightData = this.game.registry.get('fightData');
-        console.log(this.fightData.white);
 
         switch(this.fightData.white) {
             case 'p':
@@ -33,18 +32,20 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'b':
                 this.load.image('w_b', 'assets/images/WhiteBishop.png');
-                this.load.spritesheet('whiteBishopWalking', 'assets/images/WhiteBishopWalking.png', { frameWidth: 16, frameWidth: 16 });
+                this.load.spritesheet('whiteBishopWalking', 'assets/images/WhiteBishopWalking.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('whiteBishopBreak', 'assets/images/WhiteBishopBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
                 break;
             case 'r':
                 this.load.image('w_r', 'assets/images/WhiteRook.png');
+                this.load.spritesheet('whiteRookWalking', 'assets/images/WhiteRookWalking.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('whiteRookBreak', 'assets/images/WhiteRookBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
                 break;
             case 'q':
                 this.load.image('w_q', 'assets/images/WhiteQueen.png'); 
                 this.load.image('rookProjectile', 'assets/images/rookProjectile.png');
+                this.load.spritesheet('whiteQueenWalking', 'assets/images/WhiteQueenWalking.png', { frameWidth: 18, frameHeight: 16 });
                 this.load.spritesheet('whiteQueenBreak', 'assets/images/WhiteQueenBreak.png', { frameWidth: 16, frameHeight: 16 });
                 this.load.spritesheet('bishopLightBall', 'assets/images/BishopLightBall.png', { frameWidth: 6, frameHeight: 6 });
                 break;
@@ -290,6 +291,14 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'r':
                 playerSpriteKey = 'w_r'
+                if (!this.anims.exists('whiteRookWalking')) {
+                    this.anims.create({
+                        key: 'whiteRookWalking',
+                        frames: this.anims.generateFrameNumbers('whiteRookWalking', { start: 0, end: 3 }), 
+                        frameRate: 10,
+                        repeat: -1 
+                    });
+                }
                 if (!this.anims.exists('whiteRookBreaking')) {
                     this.anims.create({
                         key: 'whiteRookBreaking',
@@ -301,6 +310,14 @@ export default class FightScene extends Phaser.Scene {
                 break;
             case 'q':
                 playerSpriteKey = 'w_q'
+                if (!this.anims.exists('whiteQueenWalking')) {
+                    this.anims.create({
+                        key: 'whiteQueenWalking',
+                        frames: this.anims.generateFrameNumbers('whiteQueenWalking', { start: 0, end: 3 }), 
+                        frameRate: 10,
+                        repeat: -1 
+                    });
+                }
                 if (!this.anims.exists('whiteQueenBreaking')) {
                     this.anims.create({
                         key: 'whiteQueenBreaking',
@@ -712,7 +729,7 @@ export default class FightScene extends Phaser.Scene {
                     this.playerSword.body.enable = false;
                 });
             }
-            if (this.player.texture.key === 'w_r' || this.player.texture.key === 'w_q') { 
+            if (this.fightData.white === 'r' || this.fightData.white === 'q') { 
                 let projectile = this.createRookProjectile(this.player);
                 let velocityX = this.player.flipX ? -200 : 200; 
                 let velocityY = -50; // Initial upward force to create an arc
@@ -934,30 +951,63 @@ export default class FightScene extends Phaser.Scene {
     }
 
     updatePlayerAnimation() {
-        //const fightData = this.game.registry.get('fightData');
-        if (this.fightData.white === 'p') {
-            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-                this.player.anims.play('whitePawnWalking', true);
-            } else {
-                this.player.anims.stop();
-                this.player.setTexture('w_p');
-            }
-        } else if (this.fightData.white === 'n') {
-            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-                this.player.anims.play('whiteKnightWalking', true);
-            } else {
-                this.player.anims.stop();
-                this.player.setTexture('w_n');
-            }
-        } else if (this.fightData.white === 'b') {
-            if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
-                this.player.anims.play('whiteBishopWalking', true);
-            } else {
-                this.player.anims.stop();
-                this.player.setTexture('w_b');
-            }
-        } 
+        const pieceAnimations = {
+            'p': { animation: 'whitePawnWalking', texture: 'w_p' },
+            'n': { animation: 'whiteKnightWalking', texture: 'w_n' },
+            'b': { animation: 'whiteBishopWalking', texture: 'w_b' },
+            'r': { animation: 'whiteRookWalking', texture: 'w_r' },
+            'q': { animation: 'whiteQueenWalking', texture: 'w_q' }
+        };
+    
+        const pieceType = this.fightData.white;  // Assuming 'white' is a single character representing the piece type.
+        const piece = pieceAnimations[pieceType];
+    
+        if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+            this.player.anims.play(piece.animation, true);
+        } else {
+            this.player.anims.stop();
+            this.player.setTexture(piece.texture);
+        }
     }
+
+    // updatePlayerAnimation() {
+    //     if (this.fightData.white === 'p') {
+    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+    //             this.player.anims.play('whitePawnWalking', true);
+    //         } else {
+    //             this.player.anims.stop();
+    //             this.player.setTexture('w_p');
+    //         }
+    //     } else if (this.fightData.white === 'n') {
+    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+    //             this.player.anims.play('whiteKnightWalking', true);
+    //         } else {
+    //             this.player.anims.stop();
+    //             this.player.setTexture('w_n');
+    //         }
+    //     } else if (this.fightData.white === 'b') {
+    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+    //             this.player.anims.play('whiteBishopWalking', true);
+    //         } else {
+    //             this.player.anims.stop();
+    //             this.player.setTexture('w_b');
+    //         }
+    //     } else if (this.fightData.white === 'r') {
+    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+    //             this.player.anims.play('whiteRookWalking', true);
+    //         } else {
+    //             this.player.anims.stop();
+    //             this.player.setTexture('w_r');
+    //         }
+    //     } else if (this.fightData.white === 'q') {
+    //         if (this.player.body.touching.down && Math.abs(this.player.body.velocity.x) > 0) {
+    //             this.player.anims.play('whiteQueenWalking', true);
+    //         } else {
+    //             this.player.anims.stop();
+    //             this.player.setTexture('w_q');
+    //         }
+    //     } 
+    // }
 
     pyroCaveSetUp() {
         this.tiles = this.createGroundTiles('stone');
